@@ -1,3 +1,15 @@
+@font-face {
+  font-family: Lyrics;
+  src: url("./fonts/Lyrics.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: Interface;
+  src: url("./fonts/Interface.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+}
 @import "tailwindcss";
 #gradient-canvas {
   width: 100%;
@@ -6,4 +18,9 @@
   --gradient-color-2: #6ec3f4;
   --gradient-color-3: #eae2ff;
   --gradient-color-4: #b9beff;
+}
+
+@theme {
+  --font-lyrics: Lyrics, "sans-serif";
+  --font-interface: Interface, "sans-serif";
 }
