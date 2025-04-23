@@ -577,7 +577,7 @@ class Gradient {
             let e = 160;
             this.isMetaKey && (e = -160), (this.t += e);
           }
-          (this.mesh.material.uniforms.u_time.value = this.t * 0.6),
+          (this.mesh.material.uniforms.u_time.value = this.t * 0.7),
             this.minigl.render();
         }
         if (0 !== this.last && this.isStatic)

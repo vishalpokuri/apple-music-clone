@@ -14,8 +14,8 @@ function Lyrics() {
         line={"When the world don't feel like home"}
         styles="mt-56"
       />
-      {lyrics.map((l) => (
-        <LyricsComponent line={l} styles={"opacity-50 text-3xl"} />
+      {lyrics.map((l, index) => (
+        <LyricsComponent key={index} line={l} styles={"opacity-50 text-3xl"} />
       ))}
     </div>
   );
