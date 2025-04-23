@@ -43,7 +43,7 @@ function App() {
         <SongDesc />
         <Lyrics />
       </div>
-      <SearchBox visible={true} />
+      <SearchBox visible={false} />
     </div>
   );
 }

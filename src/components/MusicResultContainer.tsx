@@ -20,8 +20,8 @@ function MusicResultContainer({ imgurl, title, artist }: MusicResult) {
           />
         </div>
         <div className="flex flex-col justify-center">
-          <p className="text-md font-lyrics text-white truncate">{title}</p>
-          <p className="text-sm font-interface text-gray-300 truncate">
+          <p className="text-md font-lyrics text-[#d8d8d8] truncate">{title}</p>
+          <p className="text-sm font-interface text-[#ff4e6b] truncate">
             {artist}
           </p>
         </div>
