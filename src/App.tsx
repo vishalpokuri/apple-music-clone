@@ -12,7 +12,17 @@ function App() {
   const setAccessToken = useAccessTokenStore((state) => state.setAccessToken);
   const { visible, setVisible } = usePopUpSearchBar();
   //TODO: listen to ctrl+K for search bar popup
-  // useEffect;
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setVisible();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [visible]);
 
   useEffect(() => {
     const authParameters = {
@@ -43,7 +53,7 @@ function App() {
         <SongDesc />
         <Lyrics />
       </div>
-      <SearchBox visible={false} />
+      <SearchBox visible={visible} />
     </div>
   );
 }

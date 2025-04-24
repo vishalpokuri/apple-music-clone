@@ -3,7 +3,7 @@ import { create } from "zustand";
 
 type PopUpSearchBar = {
   visible: boolean;
-  setVisible: (value: boolean) => void;
+  setVisible: () => void;
 };
 
 type SearchInput = {
@@ -38,5 +38,5 @@ export const useSearchResultStore = create<SearchResults>((set) => ({
 
 export const usePopUpSearchBar = create<PopUpSearchBar>((set) => ({
   visible: false,
-  setVisible: (value) => set({ visible: value }),
+  setVisible: () => set((state) => ({ visible: !state.visible })),
 }));
