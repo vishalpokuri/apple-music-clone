@@ -6,22 +6,37 @@ import Lyrics from "./components/Lyrics.tsx";
 import SongDesc from "./components/SongDesc.tsx";
 
 import SearchBox from "./components/SearchBox.tsx";
-import { useAccessTokenStore, usePopUpSearchBar } from "./utils/store.ts";
+import {
+  useAccessTokenStore,
+  usePopUpSearchBar,
+  useSearchResultStore,
+} from "./utils/store.ts";
 
 function App() {
   const setAccessToken = useAccessTokenStore((state) => state.setAccessToken);
   const { visible, setVisible } = usePopUpSearchBar();
-  //TODO: listen to ctrl+K for search bar popup
+  const setSearchResult = useSearchResultStore(
+    (state) => state.setSearchResult
+  );
+
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.ctrlKey && e.key.toLowerCase() === "k") {
         e.preventDefault();
+        //set the search results to null if already opened
+        if (visible) {
+          setSearchResult([{}]);
+        }
+        setVisible();
+      }
+      if (visible && e.key == "Escape") {
         setVisible();
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible]);
 
   useEffect(() => {
@@ -44,6 +59,7 @@ function App() {
     }
 
     datacall();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

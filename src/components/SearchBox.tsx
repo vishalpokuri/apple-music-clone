@@ -1,10 +1,12 @@
 import {
   useAccessTokenStore,
+  usePopUpSearchBar,
   useSearchInputStore,
   useSearchResultStore,
 } from "../utils/store";
 import { AnimatePresence, motion } from "motion/react";
 import MusicResultContainer from "./MusicResultContainer";
+import { useEffect, useRef } from "react";
 
 interface SearchBoxProps {
   visible: boolean;
@@ -14,6 +16,9 @@ function SearchBox({ visible }: SearchBoxProps) {
   const { searchInput, setSearchInput } = useSearchInputStore();
   const { accessToken } = useAccessTokenStore();
   const { searchResult, setSearchResult } = useSearchResultStore();
+  const setVisible = usePopUpSearchBar((state) => state.setVisible);
+
+  const searchRef = useRef(null) as any;
 
   async function search() {
     const artistParameters = {
@@ -27,7 +32,7 @@ function SearchBox({ visible }: SearchBoxProps) {
     const response = await fetch(
       "https://api.spotify.com/v1/search?q=" +
         searchInput +
-        "&type=track&limit=5",
+        "&type=track&limit=6",
       artistParameters
     );
     const data = await response.json();
@@ -35,6 +40,10 @@ function SearchBox({ visible }: SearchBoxProps) {
 
     setSearchResult(metadata);
   }
+
+  useEffect(() => {
+    searchRef.current?.focus();
+  }, [visible]);
 
   return (
     <AnimatePresence>
@@ -47,6 +56,7 @@ function SearchBox({ visible }: SearchBoxProps) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
+            onClick={setVisible}
           />
 
           {/* Search Modal Box */}
@@ -58,6 +68,7 @@ function SearchBox({ visible }: SearchBoxProps) {
             transition={{ type: "spring", stiffness: 300, damping: 25 }}
           >
             <input
+              ref={searchRef}
               type="text"
               className="outline-none w-full h-12 p-4 bg-[#27272a] rounded-xl text-white mb-2"
               onKeyDown={(event) => {

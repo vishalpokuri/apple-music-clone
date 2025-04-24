@@ -11,7 +11,7 @@ function MusicResultContainer({ imgurl, title, artist }: MusicResult) {
   // const artistt = "Benson Boone";
   return (
     <>
-      <div className="w-full flex flex-row h-16 my-2 px-2 items-center">
+      <div className="w-full flex flex-row h-16 my-2 px-2 items-center ">
         <div className="h-12 w-12 flex items-center justify-center mr-3">
           <img
             src={imgurl}
@@ -19,9 +19,9 @@ function MusicResultContainer({ imgurl, title, artist }: MusicResult) {
             className="w-full h-full rounded-lg object-cover"
           />
         </div>
-        <div className="flex flex-col justify-center">
+        <div className="flex flex-col justify-center truncate">
           <p className="text-md font-lyrics text-[#d8d8d8] truncate">{title}</p>
-          <p className="text-sm font-interface text-[#ff4e6b] truncate">
+          <p className="text-sm  font-interface text-[#ff4e6b] truncate">
             {artist}
           </p>
         </div>
