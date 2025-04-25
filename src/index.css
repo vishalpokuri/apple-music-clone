@@ -10,6 +10,18 @@
   font-weight: normal;
   font-style: normal;
 }
+@font-face {
+  font-family: Artist;
+  src: url("./fonts/Artist.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: Title;
+  src: url("./fonts/Title.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+}
 @import "tailwindcss";
 #gradient-canvas {
   width: 100%;
@@ -23,6 +35,8 @@
 @theme {
   --font-lyrics: Lyrics, "sans-serif";
   --font-interface: Interface, "sans-serif";
+  --font-title: Title, "sans-serif";
+  --font-artist: Artist, "sans-serif";
 }
 
 /* width */

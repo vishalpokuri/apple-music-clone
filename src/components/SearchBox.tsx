@@ -1,5 +1,4 @@
 import {
-  useAccessTokenStore,
   usePopUpSearchBar,
   useSearchInputStore,
   useSearchResultStore,
@@ -14,10 +13,11 @@ interface SearchBoxProps {
 
 function SearchBox({ visible }: SearchBoxProps) {
   const { searchInput, setSearchInput } = useSearchInputStore();
-  const { accessToken } = useAccessTokenStore();
+
   const { searchResult, setSearchResult } = useSearchResultStore();
   const setVisible = usePopUpSearchBar((state) => state.setVisible);
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const searchRef = useRef(null) as any;
 
   async function search() {
@@ -25,18 +25,17 @@ function SearchBox({ visible }: SearchBoxProps) {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorization: "Bearer " + accessToken,
+        Accept: "*/*",
       },
     };
 
     const response = await fetch(
-      "https://api.spotify.com/v1/search?q=" +
-        searchInput +
-        "&type=track&limit=6",
+      "https://saavn.dev/api/search/songs?query=" + searchInput + "&limit=6",
       artistParameters
     );
     const data = await response.json();
-    const metadata = data.tracks.items;
+    const metadata = data.data.results;
+    console.log(metadata);
 
     setSearchResult(metadata);
   }
@@ -86,9 +85,12 @@ function SearchBox({ visible }: SearchBoxProps) {
                 {searchResult.map((item, index) => (
                   <MusicResultContainer
                     key={index}
-                    title={item.album.name}
-                    imgurl={item.album.images[0].url}
-                    artist={item.artists[0]?.name}
+                    title={item.name}
+                    imgurl={item.image[item.image.length - 1].url}
+                    artist={item.artists.primary[0].name}
+                    downloadUrl={
+                      item.downloadUrl[item.downloadUrl.length - 1].url
+                    }
                   />
                 ))}
               </div>

@@ -2,13 +2,16 @@ interface MusicResult {
   imgurl: string;
   title: string;
   artist: string;
+  downloadUrl: string;
 }
 
-function MusicResultContainer({ imgurl, title, artist }: MusicResult) {
-  // const imgurlt =
-  //   "https://i.scdn.co/image/ab67616d0000b273cc04ff3e70e146ba9abacf40";
-  // const titlet = "In the stars";
-  // const artistt = "Benson Boone";
+function MusicResultContainer({
+  imgurl,
+  title,
+  artist,
+  downloadUrl,
+}: MusicResult) {
+  console.log(downloadUrl);
   return (
     <>
       <div className="w-full flex flex-row h-16 my-2 px-2 items-center ">
@@ -16,7 +19,7 @@ function MusicResultContainer({ imgurl, title, artist }: MusicResult) {
           <img
             src={imgurl}
             alt={`${title} album cover`}
-            className="w-full h-full rounded-lg object-cover"
+            className="min-w-full h-full rounded-sm object-cover"
           />
         </div>
         <div className="flex flex-col justify-center truncate">

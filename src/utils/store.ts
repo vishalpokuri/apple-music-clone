@@ -11,11 +11,6 @@ type SearchInput = {
   setSearchInput: (value: string) => void;
 };
 
-type AccessToken = {
-  accessToken: string;
-  setAccessToken: (value: string) => void;
-};
-
 type SearchResults = {
   searchResult: any[];
   setSearchResult: (value: any[]) => void;
@@ -24,11 +19,6 @@ type SearchResults = {
 export const useSearchInputStore = create<SearchInput>((set) => ({
   searchInput: "",
   setSearchInput: (value) => set({ searchInput: value }),
-}));
-
-export const useAccessTokenStore = create<AccessToken>((set) => ({
-  accessToken: "",
-  setAccessToken: (value) => set({ accessToken: value }),
 }));
 
 export const useSearchResultStore = create<SearchResults>((set) => ({

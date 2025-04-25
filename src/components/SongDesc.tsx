@@ -8,7 +8,7 @@ function SongDesc() {
         <img
           src={roomFor2}
           alt="roomFor2"
-          className="w-full h-full object-cover rounded-md"
+          className="w-full h-full object-cover rounded-md shadow-2xl"
         />
         <MusicPlayer />
       </div>

@@ -6,14 +6,9 @@ import Lyrics from "./components/Lyrics.tsx";
 import SongDesc from "./components/SongDesc.tsx";
 
 import SearchBox from "./components/SearchBox.tsx";
-import {
-  useAccessTokenStore,
-  usePopUpSearchBar,
-  useSearchResultStore,
-} from "./utils/store.ts";
+import { usePopUpSearchBar, useSearchResultStore } from "./utils/store.ts";
 
 function App() {
-  const setAccessToken = useAccessTokenStore((state) => state.setAccessToken);
   const { visible, setVisible } = usePopUpSearchBar();
   const setSearchResult = useSearchResultStore(
     (state) => state.setSearchResult
@@ -38,29 +33,6 @@ function App() {
     return () => window.removeEventListener("keydown", handleKeyDown);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible]);
-
-  useEffect(() => {
-    const authParameters = {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: `grant_type=client_credentials&client_id=${
-        import.meta.env.VITE_CLIENT_ID
-      }&client_secret=${import.meta.env.VITE_CLIENT_SECRET}`,
-    };
-    async function datacall() {
-      const response = await fetch(
-        "https://accounts.spotify.com/api/token",
-        authParameters
-      );
-      const data = await response.json();
-      if (data) {
-        setAccessToken(data.access_token);
-      }
-    }
-
-    datacall();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   return (
     <div className="w-screen h-screen select-none">
