@@ -1,51 +1,86 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Vibrant } from "node-vibrant/browser";
-import { roomFor2 } from "../utils/imageurls";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-expect-error
 import { Gradient } from "../utils/gradient.js";
+import { useImageUrlStore } from "../utils/store.js";
+
 interface Palette {
   DarkVibrant: string | null;
   Muted: string | null;
   DarkMuted: string | null;
   Vibrant: string | null;
 }
+
 function Canvas() {
   const [, setPalette] = useState<Palette | null>(null);
+  const imageUrl = useImageUrlStore((state) => state.imageUrl);
+  const gradientRef = useRef(null);
+
   useEffect(() => {
-    const imgUrl = roomFor2;
+    // Initialize the gradient only once when component mounts
+    if (!gradientRef.current) {
+      gradientRef.current = new Gradient();
+      // Don't call initGradient yet - wait for colors to be set
+    }
 
-    // Step 1: Extract palette from image
-    Vibrant.from(imgUrl)
-      .getPalette()
-      .then((palette) => {
-        const newPalette = {
-          Muted: palette.Muted?.hex ?? "#000000",
-          DarkMuted: palette.DarkMuted?.hex ?? "#111111",
-          DarkVibrant: palette.DarkVibrant?.hex ?? "#ffffff",
-          Vibrant: palette.Vibrant?.hex ?? "#aaaaaa",
-        };
+    // Extract palette from image
+    if (imageUrl) {
+      Vibrant.from(imageUrl)
+        .getPalette()
+        .then((palette) => {
+          const newPalette = {
+            Muted: palette.Muted?.hex ?? "#000000",
+            DarkMuted: palette.DarkMuted?.hex ?? "#111111",
+            DarkVibrant: palette.DarkVibrant?.hex ?? "#ffffff",
+            Vibrant: palette.Vibrant?.hex ?? "#aaaaaa",
+          };
 
-        // Step 2: Set it to state
-        setPalette(newPalette);
+          // Set palette to state
+          setPalette(newPalette);
+          console.log(newPalette);
 
-        // Step 3: Set CSS Variables dynamically
-        const canvas = document.getElementById("gradient-canvas");
-        if (canvas) {
-          canvas.style.setProperty(
-            "--gradient-color-1",
-            newPalette.DarkVibrant!
-          );
-          canvas.style.setProperty("--gradient-color-2", newPalette.Muted!);
-          canvas.style.setProperty("--gradient-color-3", newPalette.DarkMuted!);
-          canvas.style.setProperty("--gradient-color-4", newPalette.Vibrant!);
-        }
+          // Set CSS Variables dynamically
+          const canvas = document.getElementById("gradient-canvas");
+          if (canvas) {
+            canvas.style.setProperty(
+              "--gradient-color-1",
+              newPalette.DarkVibrant!
+            );
+            canvas.style.setProperty("--gradient-color-2", newPalette.Muted!);
+            canvas.style.setProperty(
+              "--gradient-color-3",
+              newPalette.DarkMuted!
+            );
+            canvas.style.setProperty("--gradient-color-4", newPalette.Vibrant!);
+          }
 
-        // Step 4: Initialize gradient AFTER setting colors
-        const gradient = new Gradient();
-        gradient.initGradient("#gradient-canvas");
-      });
-  }, []);
+          // For the first time, initialize the gradient
+          // For subsequent times, reinitialize the gradient colors
+          if (gradientRef.current) {
+            if (gradientRef.current.initialized) {
+              // If the gradient is already initialized, just reinitialize the colors
+              gradientRef.current.initGradientColors();
+              console.log("If ran");
+            } else {
+              // First time initialization
+              gradientRef.current.initGradient("#gradient-canvas");
+              gradientRef.current.initialized = true;
+              console.log("Else ran");
+            }
+          }
+        })
+        .catch((error) => {
+          console.error("Error extracting palette:", error);
+        });
+    }
+
+    // Cleanup function
+    return () => {
+      // No need for specific cleanup as we're reusing the same gradient instance
+    };
+  }, [imageUrl]);
+
   return (
     <canvas
       id="gradient-canvas"

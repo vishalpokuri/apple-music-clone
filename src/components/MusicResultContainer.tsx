@@ -4,17 +4,29 @@ interface MusicResult {
   artist: string;
   downloadUrl: string;
 }
-
+import { useImageUrlStore } from "../utils/store";
 function MusicResultContainer({
   imgurl,
   title,
   artist,
   downloadUrl,
 }: MusicResult) {
-  console.log(downloadUrl);
+  const setImageUrl = useImageUrlStore((state) => state.setImageUrl);
+
+  const play = () => {
+    //3 calls
+    //1. Set imgurl so I can set colors in canvas
+    setImageUrl(imgurl);
+    //2. backend call to get the song
+
+    //3. lyrics call to get the lyrics
+  };
   return (
     <>
-      <div className="w-full flex flex-row h-16 my-2 px-2 items-center ">
+      <div
+        className="w-full flex flex-row h-16 my-2 px-2 items-center cursor-pointer"
+        onClick={play}
+      >
         <div className="h-12 w-12 flex items-center justify-center mr-3">
           <img
             src={imgurl}
