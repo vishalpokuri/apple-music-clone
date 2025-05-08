@@ -1,8 +1,7 @@
-import { useSongDetailStore } from "../utils/store";
-import { useState } from "react";
+import { useIsPlayingStore, useSongDetailStore } from "../utils/store";
 import ProgressBar from "./ProgressBar";
 function MusicPlayer() {
-  const [play, setPlay] = useState(true);
+  const { isPlaying, toggleIsPlaying } = useIsPlayingStore();
   const { title, artist } = useSongDetailStore();
   return (
     <div className="text-white w-[100%] flex flex-col  mt-3">
@@ -15,18 +14,15 @@ function MusicPlayer() {
       {/* Animation of play button remaining */}
       <div className="flex w-[60%] mx-auto justify-around">
         <img src="/assets/backwardf.png" className="w-7 opacity-60" alt="" />
-        <div
-          className="cursor-pointer"
-          onClick={() => setPlay((prev) => !prev)}
-        >
-          {play == true ? (
+        <div className="cursor-pointer" onClick={() => toggleIsPlaying()}>
+          {isPlaying ? (
             <img
-              src="/assets/playf.png"
+              src="/assets/pausef.png"
               className="w-7"
               alt="Icon not present"
             />
           ) : (
-            <img src="/assets/pausef.png" className="w-7" alt="" />
+            <img src="/assets/playf.png" className="w-7" alt="" />
           )}
         </div>
         <img src="/assets/forwardf.png" className="w-7 opacity-60" alt="" />

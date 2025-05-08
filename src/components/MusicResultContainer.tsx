@@ -35,7 +35,6 @@ function MusicResultContainer({
 
     //3. lyrics call to get the lyrics
     const lyrics = await lyricsFetch();
-    console.log(lyrics.syncedLyrics);
     setLyrics(parseLyrics(lyrics.syncedLyrics));
   };
   const lyricsFetch = async () => {
@@ -99,6 +98,8 @@ function parseLyrics(rawLyrics: string) {
   const lines = rawLyrics.trim().split("\n");
   const parsed = [];
 
+  parsed.push({ time: 0, text: ". . ." });
+
   for (const line of lines) {
     const match = line.match(/^\[(\d{2}):(\d{2}\.\d{2})\]\s*(.+)$/);
     if (match) {
@@ -107,6 +108,6 @@ function parseLyrics(rawLyrics: string) {
       parsed.push({ time, text });
     }
   }
-
+  console.log(parsed);
   return parsed;
 }

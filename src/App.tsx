@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect } from "react";
 import "./App.css";
 
 import Canvas from "./components/Canvas.tsx";
@@ -7,6 +7,7 @@ import SongDesc from "./components/SongDesc.tsx";
 
 import SearchBox from "./components/SearchBox.tsx";
 import {
+  useIsPlayingStore,
   usePopUpSearchBar,
   useSearchResultStore,
   useAccessTokenStore,
@@ -14,7 +15,7 @@ import {
 
 function App() {
   const { visible, setVisible } = usePopUpSearchBar();
-
+  const { isPlaying, toggleIsPlaying } = useIsPlayingStore();
   const setAccessToken = useAccessTokenStore((state) => state.setAccessToken);
 
   const setSearchResult = useSearchResultStore(
@@ -55,6 +56,9 @@ function App() {
       if (visible && e.key == "Escape") {
         setVisible();
       }
+      if (!visible && e.code == "Space") {
+        toggleIsPlaying();
+      }
     };
 
     window.addEventListener("keydown", handleKeyDown);
@@ -67,7 +71,7 @@ function App() {
       <Canvas />
       <div className="w-screen h-screen flex">
         <SongDesc />
-        <Lyrics isPlaying={false} />
+        <Lyrics />
       </div>
       <SearchBox visible={visible} />
     </div>

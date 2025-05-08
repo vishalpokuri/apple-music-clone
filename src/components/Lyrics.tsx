@@ -1,26 +1,47 @@
-import React, { useEffect, useRef, useState } from "react";
-import { useSongDetailStore } from "../utils/store";
+import { useEffect, useRef } from "react";
+import {
+  useCurrentTimeStore,
+  useIsPlayingStore,
+  useSongDetailStore,
+} from "../utils/store";
 
 interface LyricLine {
   time: number; // in seconds
   text: string;
 }
 
-function Lyrics({ isPlaying }: { isPlaying: boolean }) {
-  const [currentTime, setCurrentTime] = useState(0);
-  const { lyrics } = useSongDetailStore();
+function Lyrics() {
+  const { isPlaying, setIsPlaying } = useIsPlayingStore();
+  const { currentTime, startInterval, resetInterval, pauseInterval } =
+    useCurrentTimeStore();
+  const { lyrics, duration } = useSongDetailStore();
   const lineRefs = useRef<(HTMLDivElement | null)[]>([]);
   const currentIndex = lyrics.findIndex(
     (line: LyricLine, index: number) =>
-      currentTime >= line.time &&
-      (index === lyrics.length - 1 || currentTime < lyrics[index + 1].time)
+      currentTime / 1000 >= line.time &&
+      (index === lyrics.length - 1 ||
+        currentTime / 1000 < lyrics[index + 1].time)
   );
 
   useEffect(() => {
-    setInterval(() => {
-      setCurrentTime((prev) => prev + 1);
-    }, 1000);
-  }, []);
+    if (isPlaying) {
+      startInterval();
+    } else {
+      pauseInterval();
+    }
+
+    if (currentTime > duration) {
+      pauseInterval();
+    }
+
+    return () => {
+      resetInterval();
+    };
+  }, [isPlaying]);
+
+  useEffect(() => {
+    setIsPlaying(true);
+  }, [lyrics]);
 
   const getDuration = (index: number): number => {
     if (index === lyrics.length - 1) return 2;
@@ -37,13 +58,15 @@ function Lyrics({ isPlaying }: { isPlaying: boolean }) {
   }, [currentIndex]);
 
   return (
-    <div className="w-[55vw] h-[80vh] my-auto overflow-y-scroll relative font-lyrics text-white text-4xl opacity-80 scrollbar-hide pr-12">
+    <div className="w-[55vw] h-[80vh] my-auto overflow-y-scroll relative font-lyrics text-white text-4xl opacity-80 scrollbar-hidden pr-12">
       <div className="pb-56 relative">
         {lyrics.length > 0 ? (
           lyrics.map((line: LyricLine, index: number) => (
             <div
               key={index}
-              ref={(el) => (lineRefs.current[index] = el)}
+              ref={(el) => {
+                lineRefs.current[index] = el;
+              }}
               className={`mb-7 transition-all duration-300 ${
                 index === currentIndex
                   ? "text-white text-4xl relative animate-gradient-flow"
@@ -67,21 +90,8 @@ function Lyrics({ isPlaying }: { isPlaying: boolean }) {
           </div>
         )}
       </div>
-
-      {/* Top and bottom fade overlays */}
-      {/* <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-[#0a0a0a] via-[#0a0a0a]/10 to-transparent pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/10 to-transparent pointer-events-none" /> */}
     </div>
   );
 }
 
 export default Lyrics;
-
-interface LyricLine {
-  styles: string;
-  line: string;
-}
-
-function LyricsComponent({ line, styles }: LyricLine) {
-  return <div className={`mb-7 ${styles} `}>{line}</div>;
-}

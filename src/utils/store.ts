@@ -19,6 +19,16 @@ type AccessToken = {
   accessToken: string;
   setAccessToken: (value: string) => void;
 };
+type CurrentTime = {
+  currentTime: number;
+  setCurrentTime: (value: number) => void;
+  incrementTime: () => void;
+  intervalId: NodeJS.Timeout | null;
+  setIntervalId: (id: NodeJS.Timeout | null) => void;
+  startInterval: () => void;
+  resetInterval: () => void;
+  pauseInterval: () => void;
+};
 
 type SongDetails = {
   imageUrl: string;
@@ -35,6 +45,12 @@ type SongDetails = {
   setDuration: (value: number) => void;
   setLyrics: (value: any[]) => void;
 };
+type IsPlaying = {
+  isPlaying: boolean;
+  setIsPlaying: (value: boolean) => void;
+  toggleIsPlaying: () => void;
+};
+
 export const useSearchInputStore = create<SearchInput>((set) => ({
   searchInput: "",
   setSearchInput: (value) => set({ searchInput: value }),
@@ -63,8 +79,44 @@ export const useSongDetailStore = create<SongDetails>((set) => ({
   setArtist: (value) => set({ artist: value }),
   downloadUrl: "",
   setDownloadUrl: (value) => set({ downloadUrl: value }),
-  duration: 210,
+  duration: 0,
   setDuration: (value) => set({ duration: value }),
   lyrics: [],
   setLyrics: (value) => set({ lyrics: value }),
+}));
+export const useIsPlayingStore = create<IsPlaying>((set) => ({
+  isPlaying: false,
+  setIsPlaying: (value) => set({ isPlaying: value }),
+  toggleIsPlaying: () => set((state) => ({ isPlaying: !state.isPlaying })),
+}));
+export const useCurrentTimeStore = create<CurrentTime>((set, get) => ({
+  currentTime: 0,
+  intervalId: null,
+  setCurrentTime: (value) => set({ currentTime: value }),
+  incrementTime: () =>
+    set((state) => ({ currentTime: state.currentTime + 200 })),
+  setIntervalId: (id) => set({ intervalId: id }),
+  startInterval: () => {
+    const { intervalId, incrementTime } = get();
+    if (intervalId) return; // Don't start if already running
+
+    const id = setInterval(() => {
+      incrementTime();
+    }, 200);
+    set({ intervalId: id });
+  },
+  pauseInterval: () => {
+    const { intervalId } = get();
+    if (intervalId) {
+      clearInterval(intervalId);
+      set({ intervalId: null });
+    }
+  },
+  resetInterval: () => {
+    const { intervalId } = get();
+    if (intervalId) {
+      clearInterval(intervalId);
+      set({ intervalId: null, currentTime: 0 });
+    }
+  },
 }));
