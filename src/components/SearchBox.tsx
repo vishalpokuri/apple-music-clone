@@ -93,6 +93,7 @@ function SearchBox({ visible }: SearchBoxProps) {
                     imgurl={item.album.images[0].url}
                     artist={item.artists[0]?.name}
                     downloadUrl={item.external_urls.spotify}
+                    duration={Math.floor(item.duration_ms / 1000)}
                   />
                 ))}
               </div>

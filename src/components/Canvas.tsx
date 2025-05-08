@@ -3,7 +3,7 @@ import { Vibrant } from "node-vibrant/browser";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-expect-error
 import { Gradient } from "../utils/gradient.js";
-import { useImageUrlStore } from "../utils/store.js";
+import { useSongDetailStore } from "../utils/store.js";
 
 interface Palette {
   DarkVibrant: string | null;
@@ -13,8 +13,13 @@ interface Palette {
 }
 
 function Canvas() {
-  const [, setPalette] = useState<Palette | null>(null);
-  const imageUrl = useImageUrlStore((state) => state.imageUrl);
+  const [, setPalette] = useState<Palette | null>({
+    DarkMuted: "#6c5a3b",
+    DarkVibrant: "#84641c",
+    Muted: "#b18b4c",
+    Vibrant: "#bc8c44",
+  });
+  const imageUrl = useSongDetailStore((state) => state.imageUrl);
   const gradientRef = useRef(null);
 
   useEffect(() => {

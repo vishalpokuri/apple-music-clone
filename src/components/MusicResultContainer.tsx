@@ -3,20 +3,27 @@ interface MusicResult {
   title: string;
   artist: string;
   downloadUrl: string;
+  duration: number;
 }
-import { useImageUrlStore } from "../utils/store";
+import { useSongDetailStore } from "../utils/store";
 function MusicResultContainer({
   imgurl,
   title,
   artist,
   downloadUrl,
+  duration,
 }: MusicResult) {
-  const setImageUrl = useImageUrlStore((state) => state.setImageUrl);
+  const { setImageUrl, setArtist, setDownloadUrl, setDuration, setTitle } =
+    useSongDetailStore();
 
   const play = () => {
     //3 calls
-    //1. Set imgurl so I can set colors in canvas
+    //1. Set all the details of the song
     setImageUrl(imgurl);
+    setArtist(artist);
+    setTitle(title);
+    setDownloadUrl(downloadUrl);
+    setDuration(duration);
     //2. backend call to get the song
 
     //3. lyrics call to get the lyrics

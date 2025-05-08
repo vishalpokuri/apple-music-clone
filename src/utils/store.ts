@@ -20,9 +20,18 @@ type AccessToken = {
   setAccessToken: (value: string) => void;
 };
 
-type ImageUrl = {
+type SongDetails = {
   imageUrl: string;
+  title: string;
+  artist: string;
+  downloadUrl: string;
+  duration: number;
+
   setImageUrl: (value: string) => void;
+  setTitle: (value: string) => void;
+  setArtist: (value: string) => void;
+  setDownloadUrl: (value: string) => void;
+  setDuration: (value: number) => void;
 };
 export const useSearchInputStore = create<SearchInput>((set) => ({
   searchInput: "",
@@ -42,7 +51,15 @@ export const useAccessTokenStore = create<AccessToken>((set) => ({
   accessToken: "",
   setAccessToken: (value) => set({ accessToken: value }),
 }));
-export const useImageUrlStore = create<ImageUrl>((set) => ({
-  imageUrl: "https://i.scdn.co/image/ab67616d00001e02b22e21de789378f223e1795f",
+export const useSongDetailStore = create<SongDetails>((set) => ({
+  imageUrl: "",
   setImageUrl: (value) => set({ imageUrl: value }),
+  title: "",
+  setTitle: (value) => set({ title: value }),
+  artist: "",
+  setArtist: (value) => set({ artist: value }),
+  downloadUrl: "",
+  setDownloadUrl: (value) => set({ downloadUrl: value }),
+  duration: 0,
+  setDuration: (value) => set({ duration: value }),
 }));
