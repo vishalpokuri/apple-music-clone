@@ -23,6 +23,37 @@
   font-style: normal;
 }
 @import "tailwindcss";
+@utility scrollbar-hidden {
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+@keyframes waterFlow {
+  from {
+    background-position: -100% 0;
+  }
+  to {
+    background-position: 100% 0;
+  }
+}
+
+.animate-gradient-flow {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.4),
+    #ffffff,
+    rgba(255, 255, 255, 0.4)
+  );
+  background-size: 200% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  animation-name: waterFlow;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: 1;
+}
+
 #gradient-canvas {
   width: 100%;
   height: 100%;

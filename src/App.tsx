@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./App.css";
 
 import Canvas from "./components/Canvas.tsx";
@@ -14,6 +14,7 @@ import {
 
 function App() {
   const { visible, setVisible } = usePopUpSearchBar();
+
   const setAccessToken = useAccessTokenStore((state) => state.setAccessToken);
 
   const setSearchResult = useSearchResultStore(
@@ -66,7 +67,7 @@ function App() {
       <Canvas />
       <div className="w-screen h-screen flex">
         <SongDesc />
-        <Lyrics />
+        <Lyrics isPlaying={false} />
       </div>
       <SearchBox visible={visible} />
     </div>

@@ -26,12 +26,14 @@ type SongDetails = {
   artist: string;
   downloadUrl: string;
   duration: number;
+  lyrics: any[];
 
   setImageUrl: (value: string) => void;
   setTitle: (value: string) => void;
   setArtist: (value: string) => void;
   setDownloadUrl: (value: string) => void;
   setDuration: (value: number) => void;
+  setLyrics: (value: any[]) => void;
 };
 export const useSearchInputStore = create<SearchInput>((set) => ({
   searchInput: "",
@@ -52,14 +54,17 @@ export const useAccessTokenStore = create<AccessToken>((set) => ({
   setAccessToken: (value) => set({ accessToken: value }),
 }));
 export const useSongDetailStore = create<SongDetails>((set) => ({
-  imageUrl: "",
+  imageUrl:
+    "https://i.pinimg.com/736x/2d/95/84/2d9584336457c8744065598310a4a0a8.jpg",
   setImageUrl: (value) => set({ imageUrl: value }),
-  title: "",
+  title: "Song Title",
   setTitle: (value) => set({ title: value }),
-  artist: "",
+  artist: "Artist Name",
   setArtist: (value) => set({ artist: value }),
   downloadUrl: "",
   setDownloadUrl: (value) => set({ downloadUrl: value }),
-  duration: 0,
+  duration: 210,
   setDuration: (value) => set({ duration: value }),
+  lyrics: [],
+  setLyrics: (value) => set({ lyrics: value }),
 }));

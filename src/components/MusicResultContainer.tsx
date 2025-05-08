@@ -13,12 +13,19 @@ function MusicResultContainer({
   downloadUrl,
   duration,
 }: MusicResult) {
-  const { setImageUrl, setArtist, setDownloadUrl, setDuration, setTitle } =
-    useSongDetailStore();
+  const {
+    setImageUrl,
+    setArtist,
+    setDownloadUrl,
+    setDuration,
+    setTitle,
+    setLyrics,
+  } = useSongDetailStore();
 
-  const play = () => {
+  const play = async () => {
     //3 calls
     //1. Set all the details of the song
+    console.log(duration);
     setImageUrl(imgurl);
     setArtist(artist);
     setTitle(title);
@@ -27,7 +34,23 @@ function MusicResultContainer({
     //2. backend call to get the song
 
     //3. lyrics call to get the lyrics
+    const lyrics = await lyricsFetch();
+    console.log(lyrics.syncedLyrics);
+    setLyrics(parseLyrics(lyrics.syncedLyrics));
   };
+  const lyricsFetch = async () => {
+    const response = await fetch(
+      `https://lrclib.net/api/search?q=${artist} ${title}`
+    );
+    const data = await response.json();
+    try {
+      const lyrics = filterLyrics(data, duration)[0];
+      return lyrics;
+    } catch (e) {
+      return e;
+    }
+  };
+
   return (
     <>
       <div
@@ -54,3 +77,36 @@ function MusicResultContainer({
 }
 
 export default MusicResultContainer;
+
+function filterLyrics(lyricsArray: any, songDuration: number) {
+  /*
+  //create a function to get filter lyrics based on the parameters 
+  1. Duration
+  2. Song title + artist name
+  3. Synced
+  */
+
+  return lyricsArray.filter(
+    (item: { duration: number; syncedLyrics: string }) => {
+      const matchesDuration = item.duration - songDuration <= 2 ? true : false;
+      const syncedavailable = item.syncedLyrics != null ? true : false;
+      return matchesDuration && syncedavailable;
+    }
+  );
+}
+
+function parseLyrics(rawLyrics: string) {
+  const lines = rawLyrics.trim().split("\n");
+  const parsed = [];
+
+  for (const line of lines) {
+    const match = line.match(/^\[(\d{2}):(\d{2}\.\d{2})\]\s*(.+)$/);
+    if (match) {
+      const [, min, sec, text] = match;
+      const time = parseInt(min) * 60 + parseFloat(sec);
+      parsed.push({ time, text });
+    }
+  }
+
+  return parsed;
+}

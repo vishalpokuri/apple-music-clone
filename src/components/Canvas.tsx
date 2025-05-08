@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { Vibrant } from "node-vibrant/browser";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-expect-error
@@ -13,85 +13,90 @@ interface Palette {
 }
 
 function Canvas() {
-  const [, setPalette] = useState<Palette | null>({
+  const [palette, setPalette] = useState<Palette>({
     DarkMuted: "#6c5a3b",
     DarkVibrant: "#84641c",
     Muted: "#b18b4c",
     Vibrant: "#bc8c44",
   });
   const imageUrl = useSongDetailStore((state) => state.imageUrl);
-  const gradientRef = useRef(null);
+  const [key, setKey] = useState(0);
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
   useEffect(() => {
-    // Initialize the gradient only once when component mounts
-    if (!gradientRef.current) {
-      gradientRef.current = new Gradient();
-      // Don't call initGradient yet - wait for colors to be set
-    }
-
-    // Extract palette from image
     if (imageUrl) {
+      setIsTransitioning(true);
       Vibrant.from(imageUrl)
         .getPalette()
-        .then((palette) => {
-          const newPalette = {
-            Muted: palette.Muted?.hex ?? "#000000",
-            DarkMuted: palette.DarkMuted?.hex ?? "#111111",
-            DarkVibrant: palette.DarkVibrant?.hex ?? "#ffffff",
-            Vibrant: palette.Vibrant?.hex ?? "#aaaaaa",
-          };
+        .then((newPalette) => {
+          setPalette({
+            Muted: newPalette.Muted?.hex ?? "#111111",
+            DarkMuted: newPalette.DarkMuted?.hex ?? "#222222",
+            DarkVibrant: newPalette.DarkVibrant?.hex ?? "#000000",
+            Vibrant: newPalette.Vibrant?.hex ?? "#333333",
+          });
 
-          // Set palette to state
-          setPalette(newPalette);
-          console.log(newPalette);
+          setKey((prev) => prev + 1);
 
-          // Set CSS Variables dynamically
-          const canvas = document.getElementById("gradient-canvas");
-          if (canvas) {
-            canvas.style.setProperty(
-              "--gradient-color-1",
-              newPalette.DarkVibrant!
-            );
-            canvas.style.setProperty("--gradient-color-2", newPalette.Muted!);
-            canvas.style.setProperty(
-              "--gradient-color-3",
-              newPalette.DarkMuted!
-            );
-            canvas.style.setProperty("--gradient-color-4", newPalette.Vibrant!);
-          }
-
-          // For the first time, initialize the gradient
-          // For subsequent times, reinitialize the gradient colors
-          if (gradientRef.current) {
-            if (gradientRef.current.initialized) {
-              // If the gradient is already initialized, just reinitialize the colors
-              gradientRef.current.initGradientColors();
-              console.log("If ran");
-            } else {
-              // First time initialization
-              gradientRef.current.initGradient("#gradient-canvas");
-              gradientRef.current.initialized = true;
-              console.log("Else ran");
-            }
-          }
+          setTimeout(() => setIsTransitioning(false), 100);
         })
         .catch((error) => {
           console.error("Error extracting palette:", error);
+          setIsTransitioning(false);
         });
     }
-
-    // Cleanup function
-    return () => {
-      // No need for specific cleanup as we're reusing the same gradient instance
-    };
   }, [imageUrl]);
 
+  useEffect(() => {
+    const canvas = document.getElementById("gradient-canvas");
+    if (canvas) {
+      // Set CSS variables
+      canvas.style.setProperty(
+        "--gradient-color-1",
+        palette.DarkVibrant || "#000000"
+      );
+      canvas.style.setProperty(
+        "--gradient-color-2",
+        palette.Muted || "#111111"
+      );
+      canvas.style.setProperty(
+        "--gradient-color-3",
+        palette.DarkMuted || "#222222"
+      );
+      canvas.style.setProperty(
+        "--gradient-color-4",
+        palette.Vibrant || "#333333"
+      );
+
+      const gradient = new Gradient();
+      gradient.initGradient("#gradient-canvas");
+
+      return () => {
+        // Remove the canvas element
+        canvas.remove();
+      };
+    }
+  }, [key, palette]);
+
   return (
-    <canvas
-      id="gradient-canvas"
-      data-transition-in
-      className="w-screen h-screen fixed -z-10 top-0 left-0 pointer-events-none"
-    />
+    <div
+      className="fixed inset-0 -z-10 transition-opacity duration-300"
+      style={{
+        opacity: isTransitioning ? 0 : 1,
+        background: `linear-gradient(45deg, 
+          ${palette.DarkVibrant || "#000000"}, 
+          ${palette.Muted || "#111111"}, 
+          ${palette.DarkMuted || "#222222"}, 
+          ${palette.Vibrant || "#333333"})`,
+      }}
+    >
+      <canvas
+        key={key}
+        id="gradient-canvas"
+        data-transition-in
+        className="w-screen h-screen pointer-events-none"
+      />
+    </div>
   );
 }
 
