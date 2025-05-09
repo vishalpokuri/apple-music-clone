@@ -38,7 +38,6 @@ function SearchBox({ visible }: SearchBoxProps) {
       artistParameters
     );
     const data = await response.json();
-    console.log(data.tracks.items[0]);
     const metadata = data.tracks.items;
 
     setSearchResult(metadata);

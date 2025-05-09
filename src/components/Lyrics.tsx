@@ -24,6 +24,7 @@ function Lyrics() {
   );
   useEffect(() => {
     setIsPlaying(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -38,6 +39,7 @@ function Lyrics() {
       console.log(currentTime, duration);
       pauseInterval();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isPlaying]);
 
   useEffect(() => {
@@ -47,6 +49,7 @@ function Lyrics() {
       // console.log("Set playing to true (start)");
       setIsPlaying(true);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lyrics]);
 
   const getDuration = (index: number): number => {

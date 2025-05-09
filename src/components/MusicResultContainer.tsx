@@ -6,6 +6,7 @@ interface MusicResult {
   duration: number;
 }
 
+import { ROOT_URL } from "../utils/imageurls";
 import { useSongDetailStore } from "../utils/store";
 function MusicResultContainer({
   imgurl,
@@ -21,6 +22,7 @@ function MusicResultContainer({
     setDuration,
     setTitle,
     setLyrics,
+    setYoutubeUrl,
   } = useSongDetailStore();
 
   const play = async () => {
@@ -30,15 +32,20 @@ function MusicResultContainer({
     setImageUrl(imgurl);
     setArtist(artist);
     setTitle(title);
-    setDownloadUrl(downloadUrl);
     setDuration(duration);
+    setDownloadUrl(downloadUrl);
 
-    //2. backend call to get the song
-
+    //2. backend call to get the youtubeUrl
+    const youtubeUrl = await fetch(
+      `${ROOT_URL}api/song/convert?spotifyURL=${downloadUrl}`
+    );
+    const data = await youtubeUrl.json();
+    setYoutubeUrl(data.youtubeURL);
     //3. lyrics call to get the lyrics
     const lyrics = await lyricsFetch();
     setLyrics(parseLyrics(lyrics.syncedLyrics));
   };
+
   const lyricsFetch = async () => {
     const response = await fetch(
       `https://lrclib.net/api/search?q=${artist} ${title}`

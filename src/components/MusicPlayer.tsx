@@ -1,5 +1,6 @@
 import { useIsPlayingStore, useSongDetailStore } from "../utils/store";
 import ProgressBar from "./ProgressBar";
+
 function MusicPlayer() {
   const { isPlaying, toggleIsPlaying } = useIsPlayingStore();
   const { title, artist } = useSongDetailStore();

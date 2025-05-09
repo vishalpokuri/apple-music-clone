@@ -35,6 +35,7 @@ type SongDetails = {
   title: string;
   artist: string;
   downloadUrl: string;
+  youtubeUrl: string;
   duration: number;
   lyrics: any[];
 
@@ -42,6 +43,7 @@ type SongDetails = {
   setTitle: (value: string) => void;
   setArtist: (value: string) => void;
   setDownloadUrl: (value: string) => void;
+  setYoutubeUrl: (value: string) => void;
   setDuration: (value: number) => void;
   setLyrics: (value: any[]) => void;
 };
@@ -79,6 +81,8 @@ export const useSongDetailStore = create<SongDetails>((set) => ({
   setArtist: (value) => set({ artist: value }),
   downloadUrl: "",
   setDownloadUrl: (value) => set({ downloadUrl: value }),
+  youtubeUrl: "",
+  setYoutubeUrl: (value) => set({ youtubeUrl: value }),
   duration: 0,
   setDuration: (value) => set({ duration: value }),
   lyrics: [],

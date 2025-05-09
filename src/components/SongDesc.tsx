@@ -1,5 +1,5 @@
-import MusicPlayer from "./MusicPlayer";
 import { useSongDetailStore } from "../utils/store";
+import YouTubeAudioPlayer from "./YoutubeAudioPlayer";
 
 function SongDesc() {
   const imageurl = useSongDetailStore((state) => state.imageUrl);
@@ -11,7 +11,7 @@ function SongDesc() {
           alt="roomFor2"
           className="w-full h-full object-cover rounded-md shadow-2xl"
         />
-        <MusicPlayer />
+        <YouTubeAudioPlayer />
       </div>
     </div>
   );

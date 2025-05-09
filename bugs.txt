@@ -1,1 +1,2 @@
-1. When I change the canvas colors, the frames are getting jumped like way lot. Issue with canvas
+1. When I change the canvas colors, the frames are getting jumped like way lot. Issue with canvas (Performed canvas.remove() unmounting logic at useEffect hook)
+2. 
