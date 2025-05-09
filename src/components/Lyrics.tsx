@@ -22,6 +22,9 @@ function Lyrics() {
       (index === lyrics.length - 1 ||
         currentTime / 1000 < lyrics[index + 1].time)
   );
+  useEffect(() => {
+    setIsPlaying(false);
+  }, []);
 
   useEffect(() => {
     if (isPlaying) {
@@ -30,17 +33,20 @@ function Lyrics() {
       pauseInterval();
     }
 
-    if (currentTime > duration) {
+    if (currentTime / 1000 > duration) {
+      console.log("Song ended");
+      console.log(currentTime, duration);
       pauseInterval();
     }
-
-    return () => {
-      resetInterval();
-    };
   }, [isPlaying]);
 
   useEffect(() => {
-    setIsPlaying(true);
+    // console.log("Song lyrics changed");
+    resetInterval(); // reset timer for new song
+    if (lyrics.length > 2) {
+      // console.log("Set playing to true (start)");
+      setIsPlaying(true);
+    }
   }, [lyrics]);
 
   const getDuration = (index: number): number => {
@@ -67,7 +73,7 @@ function Lyrics() {
               ref={(el) => {
                 lineRefs.current[index] = el;
               }}
-              className={`mb-7 transition-all duration-300 ${
+              className={`mb-7 transition-all duration-350 ease-in-out ${
                 index === currentIndex
                   ? "text-white text-4xl relative animate-gradient-flow"
                   : "text-3xl opacity-30"

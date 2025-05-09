@@ -23,7 +23,7 @@ type CurrentTime = {
   currentTime: number;
   setCurrentTime: (value: number) => void;
   incrementTime: () => void;
-  intervalId: NodeJS.Timeout | null;
+  intervalId: NodeJS.Timeout | null | undefined;
   setIntervalId: (id: NodeJS.Timeout | null) => void;
   startInterval: () => void;
   resetInterval: () => void;
@@ -94,29 +94,37 @@ export const useCurrentTimeStore = create<CurrentTime>((set, get) => ({
   intervalId: null,
   setCurrentTime: (value) => set({ currentTime: value }),
   incrementTime: () =>
-    set((state) => ({ currentTime: state.currentTime + 200 })),
+    set((state) => ({ currentTime: state.currentTime + 400 })),
   setIntervalId: (id) => set({ intervalId: id }),
   startInterval: () => {
+    // console.log("---Starting interval---");
     const { intervalId, incrementTime } = get();
     if (intervalId) return; // Don't start if already running
 
     const id = setInterval(() => {
       incrementTime();
-    }, 200);
+    }, 400);
+    // console.log("Interval ID", id);
     set({ intervalId: id });
   },
   pauseInterval: () => {
     const { intervalId } = get();
+    // console.log("---Pausing interval---");
+    // console.log("Interval ID", intervalId);
+
     if (intervalId) {
       clearInterval(intervalId);
-      set({ intervalId: null });
     }
+    set({ intervalId: null });
   },
   resetInterval: () => {
     const { intervalId } = get();
+    // console.log("---Resetting interval---");
+    // console.log("Interval ID", intervalId);
+
     if (intervalId) {
       clearInterval(intervalId);
-      set({ intervalId: null, currentTime: 0 });
     }
+    set({ intervalId: null, currentTime: 0 });
   },
 }));

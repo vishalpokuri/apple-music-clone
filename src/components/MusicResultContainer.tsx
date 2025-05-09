@@ -5,6 +5,7 @@ interface MusicResult {
   downloadUrl: string;
   duration: number;
 }
+
 import { useSongDetailStore } from "../utils/store";
 function MusicResultContainer({
   imgurl,
@@ -25,12 +26,13 @@ function MusicResultContainer({
   const play = async () => {
     //3 calls
     //1. Set all the details of the song
-    console.log(duration);
+
     setImageUrl(imgurl);
     setArtist(artist);
     setTitle(title);
     setDownloadUrl(downloadUrl);
     setDuration(duration);
+
     //2. backend call to get the song
 
     //3. lyrics call to get the lyrics
@@ -108,6 +110,5 @@ function parseLyrics(rawLyrics: string) {
       parsed.push({ time, text });
     }
   }
-  console.log(parsed);
   return parsed;
 }

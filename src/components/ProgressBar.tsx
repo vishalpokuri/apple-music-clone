@@ -11,10 +11,12 @@ function ProgressBar() {
   return (
     <div className="w-[100%] flex flex-row justify-between font-interface opacity-75 text-[12px] mb-1">
       <div>
-        {forwardTimeMins}:{forwardTimeSecs}
+        {forwardTimeMins.toString().padStart(2, "0")}:
+        {forwardTimeSecs.toString().padStart(2, "0")}
       </div>
       <div>
-        -{backwardTimeMins}:{backwardTimeSecs}
+        -{backwardTimeMins.toString().padStart(2, "0")}:
+        {backwardTimeSecs.toString().padStart(2, "0")}
       </div>
     </div>
   );

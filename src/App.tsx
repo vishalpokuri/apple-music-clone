@@ -15,7 +15,7 @@ import {
 
 function App() {
   const { visible, setVisible } = usePopUpSearchBar();
-  const { isPlaying, toggleIsPlaying } = useIsPlayingStore();
+  const { toggleIsPlaying } = useIsPlayingStore();
   const setAccessToken = useAccessTokenStore((state) => state.setAccessToken);
 
   const setSearchResult = useSearchResultStore(
@@ -57,6 +57,7 @@ function App() {
         setVisible();
       }
       if (!visible && e.code == "Space") {
+        e.preventDefault();
         toggleIsPlaying();
       }
     };
