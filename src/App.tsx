@@ -7,7 +7,6 @@ import SongDesc from "./components/SongDesc.tsx";
 
 import SearchBox from "./components/SearchBox.tsx";
 import {
-  useIsPlayingStore,
   usePopUpSearchBar,
   useSearchResultStore,
   useAccessTokenStore,
@@ -15,7 +14,7 @@ import {
 
 function App() {
   const { visible, setVisible } = usePopUpSearchBar();
-  const { toggleIsPlaying } = useIsPlayingStore();
+
   const setAccessToken = useAccessTokenStore((state) => state.setAccessToken);
 
   const setSearchResult = useSearchResultStore(
@@ -55,10 +54,6 @@ function App() {
       }
       if (visible && e.key == "Escape") {
         setVisible();
-      }
-      if (!visible && e.code == "Space") {
-        e.preventDefault();
-        toggleIsPlaying();
       }
     };
 

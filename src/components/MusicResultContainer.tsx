@@ -1,3 +1,7 @@
+import { ROOT_URL } from "../utils/urls";
+import { useSongDetailStore, usePopUpSearchBar } from "../utils/store";
+import { useState } from "react";
+
 interface MusicResult {
   imgurl: string;
   title: string;
@@ -6,8 +10,6 @@ interface MusicResult {
   duration: number;
 }
 
-import { ROOT_URL } from "../utils/imageurls";
-import { useSongDetailStore } from "../utils/store";
 function MusicResultContainer({
   imgurl,
   title,
@@ -15,6 +17,7 @@ function MusicResultContainer({
   downloadUrl,
   duration,
 }: MusicResult) {
+  const [isLoading, setIsLoading] = useState(false);
   const {
     setImageUrl,
     setArtist,
@@ -25,45 +28,88 @@ function MusicResultContainer({
     setYoutubeUrl,
   } = useSongDetailStore();
 
+  const setVisible = usePopUpSearchBar((state) => state.setVisible);
+
   const play = async () => {
-    //3 calls
-    //1. Set all the details of the song
+    setIsLoading(true);
 
-    setImageUrl(imgurl);
-    setArtist(artist);
-    setTitle(title);
-    setDuration(duration);
-    setDownloadUrl(downloadUrl);
+    try {
+      // 1. Set all the details of the song
+      setImageUrl(imgurl);
+      setArtist(artist);
+      setTitle(title);
+      setDuration(duration);
+      setDownloadUrl(downloadUrl);
 
-    //2. backend call to get the youtubeUrl
-    const youtubeUrl = await fetch(
-      `${ROOT_URL}api/song/convert?spotifyURL=${downloadUrl}`
+      // 2. Make both API calls in parallel for better performance
+      const [youtubeData, lyrics] = await Promise.all([
+        fetchYoutubeUrl(downloadUrl),
+        lyricsFetch(),
+      ]);
+
+      // 3. Set the data
+      setYoutubeUrl(youtubeData.youtubeURL);
+
+      // 4. Process and set the lyrics
+      if (lyrics && lyrics.syncedLyrics) {
+        setLyrics(parseLyrics(lyrics.syncedLyrics));
+      } else {
+        // Set a placeholder if no lyrics found
+        setLyrics([{ time: 0, text: "No lyrics available" }]);
+      }
+    } catch (error) {
+      console.error("Error loading music data:", error);
+      // Set reasonable defaults in case of failure
+      setLyrics([{ time: 0, text: "Error loading lyrics" }]);
+    } finally {
+      setIsLoading(false);
+      setVisible(); // Close the search popup
+    }
+  };
+
+  const fetchYoutubeUrl = async (spotifyUrl: string) => {
+    const response = await fetch(
+      `${ROOT_URL}api/song/convert?spotifyURL=${spotifyUrl}`,
+      {
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+        },
+      }
     );
-    const data = await youtubeUrl.json();
-    setYoutubeUrl(data.youtubeURL);
-    //3. lyrics call to get the lyrics
-    const lyrics = await lyricsFetch();
-    setLyrics(parseLyrics(lyrics.syncedLyrics));
+
+    return await response.json();
   };
 
   const lyricsFetch = async () => {
-    const response = await fetch(
-      `https://lrclib.net/api/search?q=${artist} ${title}`
-    );
-    const data = await response.json();
     try {
-      const lyrics = filterLyrics(data, duration)[0];
-      return lyrics;
+      const response = await fetch(
+        `https://lrclib.net/api/search?q=${encodeURIComponent(
+          `${artist} ${title}`
+        )}`
+      );
+      const data = await response.json();
+      if (data.length > 0) {
+        const lyrics = filterLyrics(data, duration)[0];
+        return lyrics;
+      }
+      return null;
     } catch (e) {
-      return e;
+      console.error("Lyrics fetch error:", e);
+      return null;
     }
   };
 
   return (
     <>
       <div
-        className="w-full flex flex-row h-16 my-2 px-2 items-center cursor-pointer"
-        onClick={play}
+        className={`w-full flex flex-row h-16 my-2 px-2 items-center ${
+          isLoading ? "opacity-60" : "cursor-pointer"
+        }`}
+        onClick={() => {
+          if (!isLoading) {
+            play();
+          }
+        }}
       >
         <div className="h-12 w-12 flex items-center justify-center mr-3">
           <img
@@ -78,6 +124,11 @@ function MusicResultContainer({
             {artist}
           </p>
         </div>
+        {isLoading && (
+          <div className="ml-auto mr-2">
+            <div className="h-5 w-5 border-2 border-t-transparent border-[#ff4e6b] rounded-full animate-spin"></div>
+          </div>
+        )}
       </div>
       <div className="w-[90%] h-[1px] bg-zinc-700 mx-auto"></div>
     </>
@@ -94,16 +145,20 @@ function filterLyrics(lyricsArray: any, songDuration: number) {
   3. Synced
   */
 
-  return lyricsArray.filter(
+  const filtered = lyricsArray.filter(
     (item: { duration: number; syncedLyrics: string }) => {
       const matchesDuration = item.duration - songDuration <= 2 ? true : false;
       const syncedavailable = item.syncedLyrics != null ? true : false;
       return matchesDuration && syncedavailable;
     }
   );
+
+  return filtered.length > 0 ? filtered : [lyricsArray[0]]; // Return first item if no matches
 }
 
 function parseLyrics(rawLyrics: string) {
+  if (!rawLyrics) return [{ time: 0, text: "No lyrics available" }];
+
   const lines = rawLyrics.trim().split("\n");
   const parsed = [];
 
@@ -117,5 +172,8 @@ function parseLyrics(rawLyrics: string) {
       parsed.push({ time, text });
     }
   }
-  return parsed;
+
+  return parsed.length > 1
+    ? parsed
+    : [{ time: 0, text: "No synced lyrics available" }];
 }

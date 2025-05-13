@@ -47,6 +47,7 @@ type SongDetails = {
   setDuration: (value: number) => void;
   setLyrics: (value: any[]) => void;
 };
+
 type IsPlaying = {
   isPlaying: boolean;
   setIsPlaying: (value: boolean) => void;
@@ -98,7 +99,7 @@ export const useCurrentTimeStore = create<CurrentTime>((set, get) => ({
   intervalId: null,
   setCurrentTime: (value) => set({ currentTime: value }),
   incrementTime: () =>
-    set((state) => ({ currentTime: state.currentTime + 400 })),
+    set((state) => ({ currentTime: state.currentTime + 1000 })),
   setIntervalId: (id) => set({ intervalId: id }),
   startInterval: () => {
     // console.log("---Starting interval---");
@@ -107,7 +108,7 @@ export const useCurrentTimeStore = create<CurrentTime>((set, get) => ({
 
     const id = setInterval(() => {
       incrementTime();
-    }, 400);
+    }, 1000);
     // console.log("Interval ID", id);
     set({ intervalId: id });
   },
