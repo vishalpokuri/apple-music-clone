@@ -59,6 +59,7 @@ function Canvas() {
         "--gradient-color-2",
         palette.Muted || "#111111"
       );
+
       canvas.style.setProperty(
         "--gradient-color-3",
         palette.DarkMuted || "#222222"
@@ -72,7 +73,6 @@ function Canvas() {
       gradient.initGradient("#gradient-canvas");
 
       return () => {
-        // Remove the canvas element
         canvas.remove();
       };
     }

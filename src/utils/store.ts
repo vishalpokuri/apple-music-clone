@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { create } from "zustand";
+import { devtools } from "zustand/middleware";
 
 type PopUpSearchBar = {
   visible: boolean;
@@ -15,19 +16,15 @@ type SearchResults = {
   searchResult: any[];
   setSearchResult: (value: any[]) => void;
 };
+
 type AccessToken = {
   accessToken: string;
   setAccessToken: (value: string) => void;
 };
+
 type CurrentTime = {
   currentTime: number;
   setCurrentTime: (value: number) => void;
-  incrementTime: () => void;
-  intervalId: NodeJS.Timeout | null | undefined;
-  setIntervalId: (id: NodeJS.Timeout | null) => void;
-  startInterval: () => void;
-  resetInterval: () => void;
-  pauseInterval: () => void;
 };
 
 type SongDetails = {
@@ -38,7 +35,6 @@ type SongDetails = {
   youtubeUrl: string;
   duration: number;
   lyrics: any[];
-
   setImageUrl: (value: string) => void;
   setTitle: (value: string) => void;
   setArtist: (value: string) => void;
@@ -54,82 +50,93 @@ type IsPlaying = {
   toggleIsPlaying: () => void;
 };
 
-export const useSearchInputStore = create<SearchInput>((set) => ({
-  searchInput: "",
-  setSearchInput: (value) => set({ searchInput: value }),
-}));
+// 🔍 Search Input
+export const useSearchInputStore = create<SearchInput>()(
+  devtools(
+    (set) => ({
+      searchInput: "",
+      setSearchInput: (value) => set({ searchInput: value }),
+    }),
+    { name: "SearchInputStore" }
+  )
+);
 
-export const useSearchResultStore = create<SearchResults>((set) => ({
-  searchResult: [{}],
-  setSearchResult: (value) => set({ searchResult: value }),
-}));
+// 🔍 Search Result
+export const useSearchResultStore = create<SearchResults>()(
+  devtools(
+    (set) => ({
+      searchResult: [{}],
+      setSearchResult: (value) => set({ searchResult: value }),
+    }),
+    { name: "SearchResultStore" }
+  )
+);
 
-export const usePopUpSearchBar = create<PopUpSearchBar>((set) => ({
-  visible: false,
-  setVisible: () => set((state) => ({ visible: !state.visible })),
-}));
-export const useAccessTokenStore = create<AccessToken>((set) => ({
-  accessToken: "",
-  setAccessToken: (value) => set({ accessToken: value }),
-}));
-export const useSongDetailStore = create<SongDetails>((set) => ({
-  imageUrl:
-    "https://i.pinimg.com/736x/2d/95/84/2d9584336457c8744065598310a4a0a8.jpg",
-  setImageUrl: (value) => set({ imageUrl: value }),
-  title: "Song Title",
-  setTitle: (value) => set({ title: value }),
-  artist: "Artist Name",
-  setArtist: (value) => set({ artist: value }),
-  downloadUrl: "",
-  setDownloadUrl: (value) => set({ downloadUrl: value }),
-  youtubeUrl: "",
-  setYoutubeUrl: (value) => set({ youtubeUrl: value }),
-  duration: 0,
-  setDuration: (value) => set({ duration: value }),
-  lyrics: [],
-  setLyrics: (value) => set({ lyrics: value }),
-}));
-export const useIsPlayingStore = create<IsPlaying>((set) => ({
-  isPlaying: false,
-  setIsPlaying: (value) => set({ isPlaying: value }),
-  toggleIsPlaying: () => set((state) => ({ isPlaying: !state.isPlaying })),
-}));
-export const useCurrentTimeStore = create<CurrentTime>((set, get) => ({
-  currentTime: 0,
-  intervalId: null,
-  setCurrentTime: (value) => set({ currentTime: value }),
-  incrementTime: () =>
-    set((state) => ({ currentTime: state.currentTime + 1000 })),
-  setIntervalId: (id) => set({ intervalId: id }),
-  startInterval: () => {
-    // console.log("---Starting interval---");
-    const { intervalId, incrementTime } = get();
-    if (intervalId) return; // Don't start if already running
+// 📱 Search Popup
+export const usePopUpSearchBar = create<PopUpSearchBar>()(
+  devtools(
+    (set) => ({
+      visible: false,
+      setVisible: () => set((state) => ({ visible: !state.visible })),
+    }),
+    { name: "PopUpSearchBarStore" }
+  )
+);
 
-    const id = setInterval(() => {
-      incrementTime();
-    }, 1000);
-    // console.log("Interval ID", id);
-    set({ intervalId: id });
-  },
-  pauseInterval: () => {
-    const { intervalId } = get();
-    // console.log("---Pausing interval---");
-    // console.log("Interval ID", intervalId);
+// 🔐 Access Token
+export const useAccessTokenStore = create<AccessToken>()(
+  devtools(
+    (set) => ({
+      accessToken: "",
+      setAccessToken: (value) => set({ accessToken: value }),
+    }),
+    { name: "AccessTokenStore" }
+  )
+);
 
-    if (intervalId) {
-      clearInterval(intervalId);
-    }
-    set({ intervalId: null });
-  },
-  resetInterval: () => {
-    const { intervalId } = get();
-    // console.log("---Resetting interval---");
-    // console.log("Interval ID", intervalId);
+// 🎵 Song Details
+export const useSongDetailStore = create<SongDetails>()(
+  devtools(
+    (set) => ({
+      imageUrl:
+        "https://i.pinimg.com/736x/2d/95/84/2d9584336457c8744065598310a4a0a8.jpg",
+      setImageUrl: (value) => set({ imageUrl: value }),
+      title: "Song Title",
+      setTitle: (value) => set({ title: value }),
+      artist: "Artist Name",
+      setArtist: (value) => set({ artist: value }),
+      downloadUrl: "",
+      setDownloadUrl: (value) => set({ downloadUrl: value }),
+      youtubeUrl: "",
+      setYoutubeUrl: (value) => set({ youtubeUrl: value }),
+      duration: 0,
+      setDuration: (value) => set({ duration: value }),
+      lyrics: [],
+      setLyrics: (value) => set({ lyrics: value }),
+    }),
+    { name: "SongDetailStore" }
+  )
+);
 
-    if (intervalId) {
-      clearInterval(intervalId);
-    }
-    set({ intervalId: null, currentTime: 0 });
-  },
-}));
+// ▶️ Is Playing
+export const useIsPlayingStore = create<IsPlaying>()(
+  devtools(
+    (set) => ({
+      isPlaying: false,
+      setIsPlaying: (value) => set({ isPlaying: value }),
+      toggleIsPlaying: () => set((state) => ({ isPlaying: !state.isPlaying })),
+    }),
+    { name: "IsPlayingStore" }
+  )
+);
+
+// ⏱️ Current Time
+export const useCurrentTimeStore = create<CurrentTime>()(
+  devtools(
+    (set) => ({
+      currentTime: 0,
+      setCurrentTime: (value) => set({ currentTime: value }),
+    }),
+    { name: "CurrentTimeStore" }
+  )
+);

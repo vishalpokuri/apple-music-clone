@@ -11,51 +11,23 @@ interface LyricLine {
 }
 
 function Lyrics() {
-  const { isPlaying, setIsPlaying } = useIsPlayingStore();
-  const { currentTime, startInterval, resetInterval, pauseInterval } =
-    useCurrentTimeStore();
-  const { lyrics, duration } = useSongDetailStore();
+  const setIsPlaying = useIsPlayingStore((state) => state.setIsPlaying);
+  const { currentTime } = useCurrentTimeStore();
+  const { lyrics } = useSongDetailStore();
+
   const lineRefs = useRef<(HTMLDivElement | null)[]>([]);
+
   const currentIndex = lyrics.findIndex(
     (line: LyricLine, index: number) =>
       currentTime / 1000 >= line.time &&
       (index === lyrics.length - 1 ||
         currentTime / 1000 < lyrics[index + 1].time)
   );
+
   useEffect(() => {
     setIsPlaying(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  useEffect(() => {
-    if (isPlaying) {
-      startInterval();
-    } else {
-      pauseInterval();
-    }
-
-    if (currentTime / 1000 > duration) {
-      console.log("Song ended");
-      console.log(currentTime, duration);
-      pauseInterval();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isPlaying]);
-
-  useEffect(() => {
-    // console.log("Song lyrics changed");
-    resetInterval(); // reset timer for new song
-    if (lyrics.length > 2) {
-      // console.log("Set playing to true (start)");
-      setIsPlaying(true);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [lyrics]);
-
-  const getDuration = (index: number): number => {
-    if (index === lyrics.length - 1) return 2;
-    return Math.max(lyrics[index + 1].time - lyrics[index].time, 1);
-  };
 
   useEffect(() => {
     if (currentIndex !== -1 && lineRefs.current[currentIndex]) {
@@ -78,17 +50,9 @@ function Lyrics() {
               }}
               className={`mb-7 transition-all duration-350 ease-in-out ${
                 index === currentIndex
-                  ? "text-white text-4xl relative animate-gradient-flow"
+                  ? "text-white text-4xl relative"
                   : "text-3xl opacity-30"
               }`}
-              style={
-                index === currentIndex
-                  ? {
-                      animationDuration: `${getDuration(index)}s`,
-                      animationPlayState: isPlaying ? "running" : "paused",
-                    }
-                  : {}
-              }
             >
               {line.text}
             </div>

@@ -37,6 +37,39 @@
   }
 }
 
+@layer components {
+  .range-slider {
+    @apply appearance-none w-full h-2 bg-white rounded;
+
+    /* Track */
+  }
+
+  .range-slider::-webkit-slider-thumb {
+    @apply appearance-none h-4 w-4 rounded-full bg-white border-none shadow-md;
+    margin-top: -4px; /* Align thumb with track */
+  }
+
+  .range-slider::-moz-range-thumb {
+    @apply h-4 w-4 rounded-full bg-green-500 border-none shadow-md;
+  }
+
+  .range-slider::-webkit-slider-runnable-track {
+    @apply bg-white h-2 rounded;
+  }
+
+  .range-slider::-moz-range-track {
+    @apply bg-white h-2 rounded;
+  }
+
+  .range-slider:disabled::-webkit-slider-thumb {
+    @apply bg-gray-400;
+  }
+
+  .range-slider:disabled::-moz-range-thumb {
+    @apply bg-gray-400;
+  }
+}
+
 .animate-gradient-flow {
   background: linear-gradient(
     90deg,

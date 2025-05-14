@@ -59,9 +59,12 @@ import {
   usePopUpSearchBar,
 } from "../utils/store";
 import ProgressBar from "./ProgressBar";
+import DetailsWrapper from "./DetailsWrapper";
 
 function YouTubeAudioPlayer() {
   const playerRef = useRef<YT.Player | null>(null);
+  const pollRef = useRef<NodeJS.Timeout | null>(null);
+
   const { visible } = usePopUpSearchBar();
 
   // Loading states
@@ -69,12 +72,10 @@ function YouTubeAudioPlayer() {
   const [playerReady, setPlayerReady] = useState(false);
   const [lyricsReady, setLyricsReady] = useState(false);
 
-  const [isReady, setIsReady] = useState(false);
-  const { isPlaying, setIsPlaying, toggleIsPlaying } = useIsPlayingStore();
+  const { isPlaying, setIsPlaying } = useIsPlayingStore();
   const [duration, setDuration] = useState(0);
   const { currentTime, setCurrentTime } = useCurrentTimeStore();
-  const { startInterval, pauseInterval } = useCurrentTimeStore();
-  const { title, artist, youtubeUrl, lyrics } = useSongDetailStore();
+  const { youtubeUrl, lyrics } = useSongDetailStore();
 
   const [videoId, setVideoId] = useState("");
 
@@ -87,26 +88,22 @@ function YouTubeAudioPlayer() {
     }
   }, [lyrics]);
 
-  // Combined ready state check
-  useEffect(() => {
-    if (playerReady && lyricsReady) {
-      setIsLoading(false);
-      if (playerRef.current) {
-        // Short delay to ensure everything is truly ready
-        setTimeout(() => {
-          playerRef.current?.playVideo();
-          setIsPlaying(true);
-          startInterval();
-        }, 500);
-      }
+  // Custom handler for play/pause button
+  const handlePlayPause = () => {
+    console.log(isPlaying);
+    if (!playerReady || !playerRef.current || isLoading) return;
+
+    if (isPlaying) {
+      playerRef.current.pauseVideo();
     } else {
-      setIsLoading(true);
+      playerRef.current.playVideo();
     }
-  }, [playerReady, lyricsReady, startInterval, setIsPlaying]);
+  };
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!visible && !isLoading && e.code === "Space") {
+        console.log("Space pressed");
         e.preventDefault();
         handlePlayPause();
       }
@@ -115,7 +112,7 @@ function YouTubeAudioPlayer() {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [visible, isLoading]);
+  }, [isPlaying]);
 
   useEffect(() => {
     if (youtubeUrl && youtubeUrl.includes("v=")) {
@@ -146,11 +143,14 @@ function YouTubeAudioPlayer() {
     }
 
     return () => {
-      // Clean up
+      if (pollRef.current) {
+        clearInterval(pollRef.current);
+      }
       if (playerRef.current) {
         playerRef.current.destroy();
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [videoId]);
 
   // Initialize YouTube player
@@ -182,132 +182,79 @@ function YouTubeAudioPlayer() {
     });
   };
 
+  // Combined ready state check
+  useEffect(() => {
+    if (playerReady && lyricsReady) {
+      setIsLoading(false);
+      if (playerRef.current) {
+        // just attempt to play
+        setTimeout(() => {
+          playerRef.current?.playVideo(); // let onStateChange handle the rest
+        }, 500);
+      }
+    } else {
+      setIsLoading(true);
+    }
+  }, [playerReady, lyricsReady]);
+
   // Player event handlers
   const onPlayerReady = (event: YT.PlayerEvent) => {
-    setIsReady(true);
     setDuration(event.target.getDuration());
     setPlayerReady(true); // Mark player as ready
     // Don't auto-play here - wait for both player and lyrics to be ready
   };
 
-  const onPlayerStateChange = (event: YT.OnStateChangeEvent) => {
-    setIsPlaying(event.data === window.YT.PlayerState.PLAYING);
+  useEffect(() => {
+    console.log("Global isPlaying", isPlaying);
+  }, [isPlaying]);
 
-    // Update duration if it wasn't available before
+  const onPlayerStateChange = (event: YT.OnStateChangeEvent) => {
+    const isNowPlaying = event.data === window.YT.PlayerState.PLAYING;
+    setIsPlaying(isNowPlaying);
+
+    if (isNowPlaying) {
+      pollRef.current = setInterval(() => {
+        const current = playerRef.current?.getCurrentTime();
+        if (current !== undefined) {
+          setCurrentTime(current * 1000); // Convert to ms
+        }
+      }, 250);
+    } else {
+      if (pollRef.current) {
+        clearInterval(pollRef.current);
+        pollRef.current = null;
+      }
+    }
     if (duration === 0) {
       setDuration(playerRef.current?.getDuration() || 0);
     }
   };
 
-  // Custom handler for play/pause button
-  const handlePlayPause = () => {
-    if (!isReady || !playerRef.current || isLoading) return;
-
-    if (isPlaying) {
-      playerRef.current.pauseVideo();
-      pauseInterval();
-    } else {
-      playerRef.current.playVideo();
-      startInterval();
-    }
-    toggleIsPlaying();
-  };
-
   // Seek functionality for the progress bar
   const seek = (seconds: number) => {
-    if (!isReady || !playerRef.current || isLoading) return;
+    if (!playerReady || !playerRef.current || isLoading) return;
     playerRef.current.seekTo(seconds, true);
     setCurrentTime(seconds);
   };
-
-  // Update current time periodically when playing
-  useEffect(() => {
-    if (isPlaying && playerRef.current && !isLoading) {
-      startInterval();
-    } else {
-      pauseInterval();
-    }
-
-    return () => {
-      pauseInterval();
-    };
-  }, [isPlaying, startInterval, pauseInterval, toggleIsPlaying, isLoading]);
-
-  // Render loading state or player UI
-  if (isLoading) {
-    return (
-      <div className="text-white w-full flex flex-col items-center justify-center mt-3">
-        <div className="animate-pulse flex flex-col items-center w-full">
-          <div className="h-4 bg-gray-700 rounded w-3/4 mb-2"></div>
-          <div className="h-3 bg-gray-700 rounded w-1/2 mb-4"></div>
-          <div className="h-2 bg-gray-700 rounded w-full mb-6"></div>
-          <div className="flex justify-center">
-            <div className="h-8 w-8 bg-gray-700 rounded-full flex items-center justify-center">
-              <svg
-                className="animate-spin h-5 w-5 text-white"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                ></circle>
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                ></path>
-              </svg>
-            </div>
-          </div>
-          <div className="text-sm mt-3 text-gray-400">Loading music...</div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="text-white w-full flex flex-col mt-3">
       {/* Hidden YouTube player */}
       <div id="youtube-player-container" className="hidden"></div>
 
-      {/* Song details */}
-      <div className="font-title opacity-90 text-sm/4">{title}</div>
-      <div className="font-artist opacity-75 mb-2 text-sm/5">{artist}</div>
-
-      {/* Progress bar */}
-      <input
-        type="range"
-        min="0"
-        max={duration}
-        value={currentTime / 1000}
-        onChange={(e) => seek(Number(e.target.value))}
-        className="w-full opacity-100 cursor-pointer"
-        disabled={isLoading}
-      />
-      <ProgressBar />
-
-      {/* Control buttons */}
-      <div className="flex w-3/5 mx-auto justify-around">
-        <img
-          src="/assets/backwardf.png"
-          className="w-7 opacity-60"
-          alt="Previous"
+      <DetailsWrapper handlePlayPause={handlePlayPause}>
+        {/* Progress bar */}
+        <input
+          type="range"
+          min="0"
+          max={duration}
+          value={currentTime / 1000}
+          onChange={(e) => seek(Number(e.target.value))}
+          className="w-full opacity-100 cursor-pointer range-slider mb-2"
+          disabled={isLoading}
         />
-        <div className="cursor-pointer" onClick={handlePlayPause}>
-          {isPlaying ? (
-            <img src="/assets/pausef.png" className="w-7" alt="Pause" />
-          ) : (
-            <img src="/assets/playf.png" className="w-7" alt="Play" />
-          )}
-        </div>
-        <img src="/assets/forwardf.png" className="w-7 opacity-60" alt="Next" />
-      </div>
+        <ProgressBar />
+      </DetailsWrapper>
     </div>
   );
 }
