@@ -42,6 +42,8 @@ type SongDetails = {
   setYoutubeUrl: (value: string) => void;
   setDuration: (value: number) => void;
   setLyrics: (value: any[]) => void;
+  videoId: string;
+  setVideoId: (value: string) => void;
 };
 
 type IsPlaying = {
@@ -113,6 +115,8 @@ export const useSongDetailStore = create<SongDetails>()(
       setDuration: (value) => set({ duration: value }),
       lyrics: [],
       setLyrics: (value) => set({ lyrics: value }),
+      videoId: "",
+      setVideoId: (value) => set({ videoId: value }),
     }),
     { name: "SongDetailStore" }
   )
@@ -132,6 +136,7 @@ export const useIsPlayingStore = create<IsPlaying>()(
 
 // ⏱️ Current Time
 export const useCurrentTimeStore = create<CurrentTime>()(
+  //Im using ms not seconds
   devtools(
     (set) => ({
       currentTime: 0,

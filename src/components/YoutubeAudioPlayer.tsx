@@ -17,6 +17,7 @@ declare namespace YT {
     getCurrentTime(): number;
     getDuration(): number;
     destroy(): void;
+    setVolume(volume: number): void;
   }
 }
 
@@ -60,7 +61,7 @@ import {
 } from "../utils/store";
 import ProgressBar from "./ProgressBar";
 import DetailsWrapper from "./DetailsWrapper";
-
+import VolumeController from "./VolumeController";
 function YouTubeAudioPlayer() {
   const playerRef = useRef<YT.Player | null>(null);
   const pollRef = useRef<NodeJS.Timeout | null>(null);
@@ -73,11 +74,11 @@ function YouTubeAudioPlayer() {
   const [lyricsReady, setLyricsReady] = useState(false);
 
   const { isPlaying, setIsPlaying } = useIsPlayingStore();
-  const [duration, setDuration] = useState(0);
   const { currentTime, setCurrentTime } = useCurrentTimeStore();
+  const [duration, setDuration] = useState(0);
   const { youtubeUrl, lyrics } = useSongDetailStore();
 
-  const [videoId, setVideoId] = useState("");
+  const { videoId, setVideoId } = useSongDetailStore();
 
   // Check if lyrics are loaded
   useEffect(() => {
@@ -90,7 +91,6 @@ function YouTubeAudioPlayer() {
 
   // Custom handler for play/pause button
   const handlePlayPause = () => {
-    console.log(isPlaying);
     if (!playerReady || !playerRef.current || isLoading) return;
 
     if (isPlaying) {
@@ -103,7 +103,6 @@ function YouTubeAudioPlayer() {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!visible && !isLoading && e.code === "Space") {
-        console.log("Space pressed");
         e.preventDefault();
         handlePlayPause();
       }
@@ -204,9 +203,9 @@ function YouTubeAudioPlayer() {
     // Don't auto-play here - wait for both player and lyrics to be ready
   };
 
-  useEffect(() => {
-    console.log("Global isPlaying", isPlaying);
-  }, [isPlaying]);
+  // useEffect(() => {
+  //   console.log("Global isPlaying", isPlaying);
+  // }, [isPlaying]);
 
   const onPlayerStateChange = (event: YT.OnStateChangeEvent) => {
     const isNowPlaying = event.data === window.YT.PlayerState.PLAYING;
@@ -234,7 +233,7 @@ function YouTubeAudioPlayer() {
   const seek = (seconds: number) => {
     if (!playerReady || !playerRef.current || isLoading) return;
     playerRef.current.seekTo(seconds, true);
-    setCurrentTime(seconds);
+    setCurrentTime(seconds * 1000);
   };
 
   return (
@@ -242,19 +241,22 @@ function YouTubeAudioPlayer() {
       {/* Hidden YouTube player */}
       <div id="youtube-player-container" className="hidden"></div>
 
-      <DetailsWrapper handlePlayPause={handlePlayPause}>
+      <DetailsWrapper handlePlayPause={handlePlayPause} isLoading={isLoading}>
         {/* Progress bar */}
         <input
           type="range"
           min="0"
           max={duration}
           value={currentTime / 1000}
-          onChange={(e) => seek(Number(e.target.value))}
-          className="w-full opacity-100 cursor-pointer range-slider mb-2"
+          onChange={(e) => {
+            seek(Number(e.target.value));
+          }}
+          className="w-full opacity-100 cursor-pointer range-slider mb-2 select-none"
           disabled={isLoading}
         />
         <ProgressBar />
       </DetailsWrapper>
+      <VolumeController playerRef={playerRef} />
     </div>
   );
 }

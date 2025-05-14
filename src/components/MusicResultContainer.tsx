@@ -137,7 +137,10 @@ function MusicResultContainer({
 
 export default MusicResultContainer;
 
-function filterLyrics(lyricsArray: any, songDuration: number) {
+function filterLyrics(
+  lyricsArray: { duration: number; syncedLyrics: string }[],
+  songDuration: number
+) {
   /*
   //create a function to get filter lyrics based on the parameters 
   1. Duration

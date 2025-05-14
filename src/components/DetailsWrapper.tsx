@@ -4,9 +4,11 @@ import { useIsPlayingStore, useSongDetailStore } from "../utils/store";
 function DetailsWrapper({
   children,
   handlePlayPause,
+  isLoading,
 }: {
   children: React.ReactNode;
   handlePlayPause: () => void;
+  isLoading: boolean;
 }) {
   const { artist, title } = useSongDetailStore();
   const isPlaying = useIsPlayingStore((state) => state.isPlaying);
@@ -25,10 +27,16 @@ function DetailsWrapper({
           alt="Previous"
         />
         <div className="cursor-pointer" onClick={handlePlayPause}>
-          {isPlaying ? (
-            <img src="/assets/pausef.png" className="w-7" alt="Pause" />
+          {isLoading ? (
+            <div className="w-7 h-7 border-2 border-t-transparent border-white rounded-full animate-spin"></div>
           ) : (
-            <img src="/assets/playf.png" className="w-7" alt="Play" />
+            <>
+              {isPlaying ? (
+                <img src="/assets/pausef.png" className="w-7" alt="Pause" />
+              ) : (
+                <img src="/assets/playf.png" className="w-7" alt="Play" />
+              )}
+            </>
           )}
         </div>
         <img src="/assets/forwardf.png" className="w-7 opacity-60" alt="Next" />
