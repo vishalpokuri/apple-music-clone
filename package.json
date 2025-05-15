@@ -13,6 +13,7 @@
     "@tailwindcss/vite": "^4.1.4",
     "motion": "^12.9.0",
     "node-vibrant": "^4.0.3",
+    "posthog-js": "^1.242.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "tailwind-scrollbar-hide": "^2.0.0",
