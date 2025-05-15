@@ -70,12 +70,14 @@ function MusicResultContainer({
     const response = await fetch(import.meta.env.VITE_INVOKE_URL, {
       method: "POST",
       headers: {
-        "Access-Control-Allow-Origin": "*",
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({ spotifyURL: spotifyUrl }),
     });
 
-    return await response.json();
+    const data = await response.json();
+    console.log(data);
+    return data;
   };
 
   const lyricsFetch = async () => {
