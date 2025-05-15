@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 import Key from "./ui/Key";
+import { useEffect } from "react";
 
 function IntroSection({
   help,
@@ -8,17 +9,27 @@ function IntroSection({
   help: boolean;
   setHelp: (help: boolean) => void;
 }) {
-  // useEffect(() => {
-  //   if (!window.localStorage.getItem("new-user")) {
-  //     console.log(window.localStorage.getItem("new-user"));
-  //     setIsOpen(true);
-  //     window.localStorage.setItem("new-user", "true");
-  //   }
-  // }, []);
+  useEffect(() => {
+    if (!window.localStorage.getItem("new-user")) {
+      setHelp(true);
+      window.localStorage.setItem("new-user", "true");
+    }
+  }, []);
+  const width = window.screen.width;
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setHelp(false);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   return (
     <AnimatePresence>
-      {help && (
+      {help && width > 1024 && (
         <>
           <motion.div
             className="fixed top-0 left-0 z-30 w-full h-full backdrop-blur-sm bg-black/30"
@@ -39,7 +50,7 @@ function IntroSection({
               damping: 25,
             }}
           >
-            <div className=" w-[50vw] h-[50vh] bg-black/50 backdrop-blur-lg border border-white/20 rounded-2xl shadow-2xl p-6 overflow-hidden flex flex-col justify-between">
+            <div className=" w-[50vw] h-[60vh] bg-black/50 backdrop-blur-lg border border-white/20 rounded-2xl shadow-2xl p-6 overflow-hidden flex flex-col justify-between">
               <img
                 src="/assets/Apple_logo_grey.svg.png"
                 alt="Apple Logo"
@@ -50,32 +61,38 @@ function IntroSection({
                 <h1 className="text-white text-3xl font-semibold font-lyrics mb-2">
                   Heyaa 👋
                 </h1>
-                <p className="text-white/90 text-base font-title mb-2">
+                <p className="text-white/90 text-base font-title mb-4">
                   I’m a music player inspired by Apple Music.
-                </p>
-                <p className="text-white/80 text-sm font-title mb-4">
-                  Use these shortcuts to move around faster:
                 </p>
               </div>
               {/* Keybindings Section */}
-              <div className="flex flex-col gap-4 text-white/90 mx-auto w-[70%]">
-                <div className="flex flex-row gap-2 items-center  justify-between">
+              <div className="flex flex-col gap-4 text-white/90 mx-auto w-[50%] p-4 border border-white/20 rounded-lg">
+                <p className="text-white/80 text-sm font-title">
+                  Use these shortcuts to move around faster:
+                </p>
+                <section className="flex flex-row gap-2 items-center  justify-between">
                   <p className="flex items-center gap-2">
                     <Key>Ctrl</Key> + <Key>K</Key>{" "}
                   </p>
                   <span className="text-sm text-white/70">Search </span>
-                </div>
-                <div className="flex flex-row gap-2 items-center  justify-between">
+                </section>
+                <section className="flex flex-row gap-2 items-center  justify-between">
                   <p className="flex items-center gap-2">
                     <Key>Space</Key>{" "}
                   </p>
                   <span className="text-sm text-white/70"> Play / Pause</span>
-                </div>
+                </section>
+                <section className="flex flex-row gap-2 items-center  justify-between">
+                  <p className="flex items-center gap-2">
+                    <Key>F11</Key>{" "}
+                  </p>
+                  <span className="text-sm text-white/70">Immersive mode</span>
+                </section>
                 <div className="flex flex-row gap-2 items-center  justify-between">
                   <p className="flex items-center gap-2">
-                    <div className="bg-white/10 px-3 p-1 rounded-md border border-white/30">
+                    <span className="bg-white/10 px-3 p-1 rounded-md border border-white/30">
                       ?
-                    </div>
+                    </span>
                     <span className="text-sm text-white/70">
                       at the bottom right
                     </span>
@@ -93,7 +110,7 @@ function IntroSection({
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <div className="flex flex-row items-center gap-2 bg-white/10 px-3 p-1 rounded-md border border-white/30 text-white/50 text-sm">
+                  <section className="flex flex-row items-center gap-2 bg-white/10 px-3 p-1 rounded-md border border-white/30 text-white/50 text-sm">
                     <p>vishalpokuri</p>
 
                     <img
@@ -101,7 +118,7 @@ function IntroSection({
                       alt="Github"
                       className="w-5 aspect-auto"
                     />
-                  </div>
+                  </section>
                 </a>
               </div>
             </div>
