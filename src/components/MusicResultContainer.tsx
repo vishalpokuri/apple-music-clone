@@ -40,11 +40,13 @@ function MusicResultContainer({
       setDuration(duration);
       setDownloadUrl(downloadUrl);
 
+      console.time("Youtube fetch");
       // 2. Make both API calls in parallel for better performance
       const [youtubeData, lyrics] = await Promise.all([
         fetchYoutubeUrl(downloadUrl),
         lyricsFetch(),
       ]);
+      console.timeEnd("Youtube fetch");
 
       // 3. Set the data
       setYoutubeUrl(youtubeData.youtubeURL);
@@ -76,7 +78,6 @@ function MusicResultContainer({
     });
 
     const data = await response.json();
-    console.log(data);
     return data;
   };
 

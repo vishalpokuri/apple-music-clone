@@ -100,8 +100,7 @@ export const useAccessTokenStore = create<AccessToken>()(
 export const useSongDetailStore = create<SongDetails>()(
   devtools(
     (set) => ({
-      imageUrl:
-        "https://i.pinimg.com/736x/2d/95/84/2d9584336457c8744065598310a4a0a8.jpg",
+      imageUrl: "/assets/placeholderImage.jpg",
       setImageUrl: (value) => set({ imageUrl: value }),
       title: "Song Title",
       setTitle: (value) => set({ title: value }),

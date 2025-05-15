@@ -11,6 +11,7 @@ declare namespace YT {
   }
 
   interface Player {
+    loadVideoById(videoId: string): unknown;
     playVideo(): void;
     pauseVideo(): void;
     seekTo(seconds: number, allowSeekAhead: boolean): void;
@@ -65,6 +66,7 @@ import VolumeController from "./VolumeController";
 function YouTubeAudioPlayer() {
   const playerRef = useRef<YT.Player | null>(null);
   const pollRef = useRef<NodeJS.Timeout | null>(null);
+  const initializedRef = useRef(false);
 
   const { visible } = usePopUpSearchBar();
 
@@ -111,16 +113,13 @@ function YouTubeAudioPlayer() {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isPlaying]);
+  }, [isPlaying, isLoading, visible]);
 
   useEffect(() => {
     if (youtubeUrl && youtubeUrl.includes("v=")) {
       setVideoId(youtubeUrl.split("v=")[1]);
-      // Reset player ready state when URL changes
-      setPlayerReady(false);
     }
-    //eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [youtubeUrl]);
+  }, [youtubeUrl, setVideoId]);
 
   // Load YouTube IFrame API
   useEffect(() => {
@@ -129,33 +128,38 @@ function YouTubeAudioPlayer() {
       const tag = document.createElement("script");
       tag.src = "https://www.youtube.com/iframe_api";
       const firstScriptTag = document.getElementsByTagName("script")[0];
-      if (firstScriptTag.parentNode) {
-        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-      }
-    }
 
-    // Initialize player when API is ready
-    window.onYouTubeIframeAPIReady = initializePlayer;
-
-    // If API was already loaded before this component mounted
-    if (window.YT && window.YT.Player && videoId) {
+      firstScriptTag?.parentNode?.insertBefore(tag, firstScriptTag);
+    } else if (window.YT && window.YT.Player && !initializedRef.current) {
       initializePlayer();
     }
 
+    // Initialize player when API is ready
+    window.onYouTubeIframeAPIReady = () => {
+      if (!initializedRef.current) {
+        initializePlayer();
+      }
+    };
     return () => {
       if (pollRef.current) {
         clearInterval(pollRef.current);
-      }
-      if (playerRef.current) {
-        playerRef.current.destroy();
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [videoId]);
 
+  useEffect(() => {
+    if (playerRef.current && playerReady && videoId) {
+      playerRef.current.loadVideoById(videoId);
+      playerRef.current.playVideo();
+    }
+  }, [videoId, playerReady]);
+
   // Initialize YouTube player
   const initializePlayer = () => {
-    if (!videoId) return;
+    if (!videoId || initializedRef.current) return;
+
+    initializedRef.current = true;
 
     // Clean up any existing player
     if (playerRef.current) {
@@ -165,9 +169,9 @@ function YouTubeAudioPlayer() {
     playerRef.current = new window.YT.Player("youtube-player-container", {
       height: "200", // Hidden video
       width: "200",
-      videoId: videoId,
+      videoId,
       playerVars: {
-        autoplay: 0, // Don't autoplay initially
+        autoplay: 0,
         controls: 0,
         disablekb: 1,
         fs: 0,
@@ -186,12 +190,6 @@ function YouTubeAudioPlayer() {
   useEffect(() => {
     if (playerReady && lyricsReady) {
       setIsLoading(false);
-      if (playerRef.current) {
-        // just attempt to play
-        setTimeout(() => {
-          playerRef.current?.playVideo(); // let onStateChange handle the rest
-        }, 500);
-      }
     } else {
       setIsLoading(true);
     }
@@ -199,7 +197,10 @@ function YouTubeAudioPlayer() {
 
   // Player event handlers
   const onPlayerReady = (event: YT.PlayerEvent) => {
+    event.target.setVolume(50); // optional: set default volume
+    event.target.playVideo();
     setDuration(event.target.getDuration());
+
     setPlayerReady(true); // Mark player as ready
     // Don't auto-play here - wait for both player and lyrics to be ready
   };
