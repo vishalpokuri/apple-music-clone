@@ -119,9 +119,9 @@ function MusicResultContainer({
             className="min-w-full h-full rounded-sm object-cover"
           />
         </div>
-        <div className="flex flex-col justify-center truncate">
-          <p className="text-md font-lyrics text-[#d8d8d8] truncate">{title}</p>
-          <p className="text-sm  font-interface text-[#ff4e6b] truncate">
+        <div className="flex flex-col justify-center h-full truncate">
+          <p className="text-md font-title text-[#d8d8d8] truncate">{title}</p>
+          <p className="text-xs font-artist text-[#ff4e6b] truncate">
             {artist}
           </p>
         </div>
@@ -131,7 +131,7 @@ function MusicResultContainer({
           </div>
         )}
       </div>
-      <div className="w-[90%] h-[1px] bg-zinc-700 mx-auto"></div>
+      <div className="w-[96%] h-[1px] bg-zinc-700 mx-auto"></div>
     </>
   );
 }

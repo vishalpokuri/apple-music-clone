@@ -59,7 +59,7 @@ function Lyrics() {
           ))
         ) : (
           <div className="text-3xl opacity-40">
-            Your lyrics will appear here
+            Choose a song with the search bar
           </div>
         )}
       </div>

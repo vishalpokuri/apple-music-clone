@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
 
 import Canvas from "./components/Canvas.tsx";
@@ -11,9 +11,10 @@ import {
   useSearchResultStore,
   useAccessTokenStore,
 } from "./utils/store.ts";
-
+import IntroSection from "./components/IntroSection.tsx";
 function App() {
   const { visible, setVisible } = usePopUpSearchBar();
+  const [help, setHelp] = useState(false);
 
   const setAccessToken = useAccessTokenStore((state) => state.setAccessToken);
 
@@ -40,6 +41,7 @@ function App() {
     }
 
     datacall();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -70,6 +72,13 @@ function App() {
         <Lyrics />
       </div>
       <SearchBox visible={visible} />
+      <IntroSection help={help} setHelp={setHelp} />
+      <div
+        className="bg-white/10 px-3 p-1 rounded-md border border-white/30 absolute bottom-4 right-4 font-bold text-white/90 cursor-pointer"
+        onClick={() => setHelp(!help)}
+      >
+        ?
+      </div>
     </div>
   );
 }
