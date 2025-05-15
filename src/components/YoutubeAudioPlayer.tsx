@@ -119,6 +119,7 @@ function YouTubeAudioPlayer() {
       // Reset player ready state when URL changes
       setPlayerReady(false);
     }
+    //eslint-disable-next-line react-hooks/exhaustive-deps
   }, [youtubeUrl]);
 
   // Load YouTube IFrame API

@@ -1,4 +1,3 @@
-import { ROOT_URL } from "../utils/urls";
 import { useSongDetailStore, usePopUpSearchBar } from "../utils/store";
 import { useState } from "react";
 
@@ -68,14 +67,13 @@ function MusicResultContainer({
   };
 
   const fetchYoutubeUrl = async (spotifyUrl: string) => {
-    const response = await fetch(
-      `${ROOT_URL}api/song/convert?spotifyURL=${spotifyUrl}`,
-      {
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-        },
-      }
-    );
+    const response = await fetch(import.meta.env.VITE_INVOKE_URL, {
+      method: "POST",
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+      },
+      body: JSON.stringify({ spotifyURL: spotifyUrl }),
+    });
 
     return await response.json();
   };
