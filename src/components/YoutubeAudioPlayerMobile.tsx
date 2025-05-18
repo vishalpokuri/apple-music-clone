@@ -63,7 +63,7 @@ import {
 import ProgressBar from "./ProgressBar";
 import VolumeController from "./VolumeController";
 import ControlButtons from "./subComponents/ControlButtons";
-function YouTubeAudioPlayer() {
+function YouTubeAudioPlayerMobile() {
   const playerRef = useRef<YT.Player | null>(null);
   const pollRef = useRef<NodeJS.Timeout | null>(null);
   const initializedRef = useRef(false);
@@ -239,7 +239,7 @@ function YouTubeAudioPlayer() {
   };
 
   return (
-    <div className="text-white sm:w-full sm:flex sm:flex-col mt-3  hidden">
+    <div className="text-white max-w-[90vw] flex flex-col mt-3 sm:hidden  overflow-hidden">
       {/* Hidden YouTube player */}
       <div id="youtube-player-container" className="hidden"></div>
 
@@ -255,12 +255,12 @@ function YouTubeAudioPlayer() {
         className="w-full opacity-100 cursor-pointer range-slider mb-2 select-none"
         disabled={isLoading}
       />
+
       <ProgressBar />
       <ControlButtons handlePlayPause={handlePlayPause} isLoading={isLoading} />
-
       <VolumeController playerRef={playerRef} />
     </div>
   );
 }
 
-export default YouTubeAudioPlayer;
+export default YouTubeAudioPlayerMobile;

@@ -18,7 +18,7 @@ function VolumeController({
   };
 
   return (
-    <div className="flex flex-row items-center gap-2 mt-4 ">
+    <div className="sm:flex sm:flex-row sm:items-center sm:gap-2 mt-4 hidden">
       <Volume1 />
       <input
         type="range"
@@ -34,7 +34,7 @@ export default VolumeController;
 
 function Volume1() {
   return (
-    <div className="cursor-pointer">
+    <div className="cursor-pointer ">
       <svg
         width="15px"
         height="15px"

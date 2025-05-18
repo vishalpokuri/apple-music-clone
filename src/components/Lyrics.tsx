@@ -39,8 +39,8 @@ function Lyrics() {
   }, [currentIndex]);
 
   return (
-    <div className="w-[55vw] h-[80vh] my-auto overflow-y-scroll relative font-lyrics text-white text-4xl opacity-80 scrollbar-hidden pr-12">
-      <div className="pb-56 relative">
+    <div className="w-[90vw] sm:w-[55vw] h-[70vh] sm:h-[80vh] sm:my-auto overflow-y-scroll relative font-lyrics text-white sm:text-4xl opacity-80 scrollbar-hidden sm:pr-12">
+      <div className="sm:pb-56 relative">
         {lyrics.length > 0 ? (
           lyrics.map((line: LyricLine, index: number) => (
             <div
@@ -50,15 +50,15 @@ function Lyrics() {
               }}
               className={`mb-7 transition-all duration-350 ease-in-out ${
                 index === currentIndex
-                  ? "text-white text-4xl relative"
-                  : "text-3xl opacity-30"
+                  ? "text-white sm:text-4xl text-2xl relative"
+                  : "text-xl sm:text-3xl opacity-30"
               }`}
             >
               {line.text}
             </div>
           ))
         ) : (
-          <div className="text-3xl opacity-40">
+          <div className="sm:text-3xl text-2xl opacity-40">
             Choose a song with the search bar
           </div>
         )}

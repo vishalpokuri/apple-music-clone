@@ -63,7 +63,9 @@ function SearchBox({ visible }: SearchBoxProps) {
 
           {/* Search Modal Box */}
           <motion.div
-            className="fixed top-[30vh] left-1/2 transform -translate-x-1/2 w-[30vw] z-50 bg-zinc-900 rounded-t-2xl rounded-b-xl p-2"
+            className="fixed top-[30vh] left-1/2 transform -translate-x-1/2 
+             sm:w-[30vw] w-[90vw] 
+             z-50 bg-zinc-900 rounded-t-2xl rounded-b-xl p-2"
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}

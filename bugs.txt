@@ -1,2 +1,4 @@
 1. When I change the canvas colors, the frames are getting jumped like way lot. Issue with canvas (Performed canvas.remove() unmounting logic at useEffect hook)
-2. TODO: Backend is not working
+2. Mobile responsive:
+md > normal
+everything below is mobile

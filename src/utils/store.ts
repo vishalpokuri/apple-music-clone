@@ -79,7 +79,9 @@ export const usePopUpSearchBar = create<PopUpSearchBar>()(
   devtools(
     (set) => ({
       visible: false,
-      setVisible: () => set((state) => ({ visible: !state.visible })),
+      setVisible: () => {
+        set((state) => ({ visible: !state.visible }));
+      },
     }),
     { name: "PopUpSearchBarStore" }
   )
