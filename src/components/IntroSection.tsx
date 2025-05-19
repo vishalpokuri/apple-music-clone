@@ -50,7 +50,7 @@ function IntroSection({
               damping: 25,
             }}
           >
-            <div className=" w-[50vw] h-[60vh] bg-black/50 backdrop-blur-lg border border-white/20 rounded-2xl shadow-2xl p-6 overflow-hidden flex flex-col justify-between">
+            <div className=" w-[50vw] h-[65vh] bg-black/50 backdrop-blur-lg border border-white/20 rounded-2xl shadow-2xl p-6 overflow-hidden flex flex-col justify-between">
               <img
                 src="/assets/Apple_logo_grey.svg.png"
                 alt="Apple Logo"
