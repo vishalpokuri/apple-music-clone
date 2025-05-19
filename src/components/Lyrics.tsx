@@ -38,6 +38,7 @@ function Lyrics() {
         block: mobile,
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentIndex]);
 
   return (
@@ -57,7 +58,11 @@ function Lyrics() {
               }`}
               style={{ whiteSpace: "pre-line" }}
             >
-              {wrapText(line.text, 26)}
+              {window.innerWidth < 1024
+                ? window.innerWidth < 640
+                  ? wrapText(line.text, 26)
+                  : line.text
+                : wrapText(line.text, 45)}
             </div>
           ))
         ) : (

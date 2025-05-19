@@ -71,7 +71,14 @@ function SearchBox({ visible }: SearchBoxProps) {
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ type: "spring", stiffness: 300, damping: 25 }}
           >
-            <div className="flex flex-row items-center justify-between gap-1">
+            <div
+              className="flex flex-row items-center justify-between gap-1"
+              style={{
+                position: "sticky",
+                top: 0,
+                zIndex: 10,
+              }}
+            >
               <input
                 ref={searchRef}
                 type="text"
