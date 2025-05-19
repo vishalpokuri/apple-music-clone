@@ -239,7 +239,7 @@ function YouTubeAudioPlayerMobile() {
   };
 
   return (
-    <div className="text-white max-w-[90vw] flex flex-col mt-3 sm:hidden  overflow-hidden">
+    <div className="text-white max-w-[90vw] flex flex-col mt-3 sm:hidden overflow-hidden">
       {/* Hidden YouTube player */}
       <div id="youtube-player-container" className="hidden"></div>
 
@@ -252,7 +252,7 @@ function YouTubeAudioPlayerMobile() {
         onChange={(e) => {
           seek(Number(e.target.value));
         }}
-        className="w-full opacity-100 cursor-pointer range-slider mb-2 select-none"
+        className="w-full opacity-100 cursor-pointer range-slider mt-1 mb-2 select-none"
         disabled={isLoading}
       />
 

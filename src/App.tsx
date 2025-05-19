@@ -72,20 +72,23 @@ function App() {
     return (
       <div className="w-full h-full select-none">
         <Canvas />
-        <div className="h-full flex flex-col mx-4 my-6">
+        <div className="h-full flex flex-col mx-4 mb-6">
           <div className=" h-[10vh] w-full flex items-center  text-white sm:hidden">
             <div className="flex flex-row items-center justify-between w-full">
               <div className="w-full flex flex-row items-center gap-2 ">
                 <img
                   src={imageurl}
                   alt="roomFor2"
-                  className="w-[40px] h-[40px]  object-cover rounded-md shadow-2xl"
+                  className="w-[50px] h-[50px]  object-cover rounded-md shadow-2xl"
                 />
                 <TitleDesc />
               </div>
               <div
-                className="bg-black/60 rounded-lg p-2"
-                onClick={() => setVisible()}
+                className="bg-black/60 rounded-lg p-3"
+                onClick={() => {
+                  setVisible();
+                  console.log(visible);
+                }}
               >
                 <SearchIcon />
               </div>
@@ -93,6 +96,7 @@ function App() {
           </div>
           <Lyrics />
           <YouTubeAudioPlayerMobile />
+          <SearchBox visible={visible} />
         </div>
       </div>
     );
@@ -121,8 +125,8 @@ export default App;
 function SearchIcon() {
   return (
     <svg
-      width="20px"
-      height="20px"
+      width="24px"
+      height="24px"
       viewBox="0 0 24 24"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"

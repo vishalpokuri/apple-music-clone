@@ -29,17 +29,19 @@ function Lyrics() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const mobile = window.innerWidth < 640 ? "center" : "center";
+
   useEffect(() => {
     if (currentIndex !== -1 && lineRefs.current[currentIndex]) {
       lineRefs.current[currentIndex]?.scrollIntoView({
         behavior: "smooth",
-        block: "center",
+        block: mobile,
       });
     }
   }, [currentIndex]);
 
   return (
-    <div className="w-[90vw] sm:w-[55vw] h-[70vh] sm:h-[80vh] sm:my-auto overflow-y-scroll relative font-lyrics text-white sm:text-4xl opacity-80 scrollbar-hidden sm:pr-12">
+    <div className="w-[90vw] sm:w-[55vw] h-[68vh] sm:h-[80vh] sm:my-auto overflow-y-scroll relative font-lyrics text-white sm:text-4xl opacity-80 scrollbar-hidden sm:pr-12">
       <div className="sm:pb-56 relative">
         {lyrics.length > 0 ? (
           lyrics.map((line: LyricLine, index: number) => (
@@ -48,17 +50,18 @@ function Lyrics() {
               ref={(el) => {
                 lineRefs.current[index] = el;
               }}
-              className={`mb-7 transition-all duration-350 ease-in-out ${
+              className={`mb-3 sm:mb-7 transition-all duration-350 ease-in-out ${
                 index === currentIndex
-                  ? "text-white sm:text-4xl text-2xl relative"
-                  : "text-xl sm:text-3xl opacity-30"
+                  ? "text-white sm:text-4xl text-3xl relative"
+                  : "text-2xl sm:text-3xl opacity-30"
               }`}
+              style={{ whiteSpace: "pre-line" }}
             >
-              {line.text}
+              {wrapText(line.text, 26)}
             </div>
           ))
         ) : (
-          <div className="sm:text-3xl text-2xl opacity-40">
+          <div className="sm:text-3xl text-3xl opacity-40">
             Choose a song with the search bar
           </div>
         )}
@@ -68,3 +71,22 @@ function Lyrics() {
 }
 
 export default Lyrics;
+
+function wrapText(text: string, limit: number): string {
+  const words = text.split(" ");
+  const lines = [];
+  let currentLine = "";
+
+  for (const word of words) {
+    if ((currentLine + word).length <= limit) {
+      currentLine += (currentLine ? " " : "") + word;
+    } else {
+      lines.push(currentLine);
+      currentLine = word;
+    }
+  }
+
+  if (currentLine) lines.push(currentLine);
+
+  return lines.join("\n");
+}
