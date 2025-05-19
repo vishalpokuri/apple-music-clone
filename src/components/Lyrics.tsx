@@ -60,7 +60,7 @@ function Lyrics() {
             >
               {window.innerWidth < 1024
                 ? window.innerWidth < 640
-                  ? wrapText(line.text, 26)
+                  ? wrapText(line.text, 22)
                   : line.text
                 : wrapText(line.text, 45)}
             </div>
