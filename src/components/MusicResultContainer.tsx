@@ -69,13 +69,17 @@ function MusicResultContainer({
   };
 
   const fetchYoutubeUrl = async (spotifyUrl: string) => {
-    const response = await fetch(import.meta.env.VITE_INVOKE_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ spotifyURL: spotifyUrl }),
-    });
+    const response = await fetch(
+      `${
+        import.meta.env.VITE_INVOKE_URL
+      }api/song/convert?spotifyURL=${spotifyUrl}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
     const data = await response.json();
     return data;
