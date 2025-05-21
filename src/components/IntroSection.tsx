@@ -14,6 +14,7 @@ function IntroSection({
       setHelp(true);
       window.localStorage.setItem("new-user", "true");
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   const width = window.screen.width;
 
@@ -25,6 +26,7 @@ function IntroSection({
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

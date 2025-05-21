@@ -84,9 +84,7 @@ function MusicResultContainer({
   const lyricsFetch = async () => {
     try {
       const response = await fetch(
-        `https://lrclib.net/api/search?q=${encodeURIComponent(
-          `${artist} ${title}`
-        )}`
+        `https://lrclib.net/api/search?q=${`${artist} ${title}`}`
       );
       const data = await response.json();
       if (data.length > 0) {
