@@ -63,6 +63,7 @@ import {
 import ProgressBar from "./ProgressBar";
 import VolumeController from "./VolumeController";
 import ControlButtons from "./subComponents/ControlButtons";
+
 function YouTubeAudioPlayer() {
   const playerRef = useRef<YT.Player | null>(null);
   const pollRef = useRef<NodeJS.Timeout | null>(null);
@@ -70,7 +71,6 @@ function YouTubeAudioPlayer() {
 
   const { visible } = usePopUpSearchBar();
 
-  // Loading states
   const [isLoading, setIsLoading] = useState(true);
   const [playerReady, setPlayerReady] = useState(false);
   const [lyricsReady, setLyricsReady] = useState(false);
@@ -78,30 +78,21 @@ function YouTubeAudioPlayer() {
   const { isPlaying, setIsPlaying } = useIsPlayingStore();
   const { currentTime, setCurrentTime } = useCurrentTimeStore();
   const [duration, setDuration] = useState(0);
-  const { youtubeUrl, lyrics } = useSongDetailStore();
+  const { youtubeUrl, lyrics, videoId, setVideoId } = useSongDetailStore();
 
-  const { videoId, setVideoId } = useSongDetailStore();
-
-  // Check if lyrics are loaded
+  // Set lyrics ready flag
   useEffect(() => {
-    if (lyrics && lyrics.length > 0) {
-      setLyricsReady(true);
-    } else {
-      setLyricsReady(false);
-    }
+    setLyricsReady(lyrics && lyrics.length > 0);
   }, [lyrics]);
 
-  // Custom handler for play/pause button
-  const handlePlayPause = () => {
-    if (!playerReady || !playerRef.current || isLoading) return;
-
-    if (isPlaying) {
-      playerRef.current.pauseVideo();
-    } else {
-      playerRef.current.playVideo();
+  // Extract videoId from URL
+  useEffect(() => {
+    if (youtubeUrl && youtubeUrl.includes("v=")) {
+      setVideoId(youtubeUrl.split("v=")[1]);
     }
-  };
+  }, [youtubeUrl, setVideoId]);
 
+  // Handle play/pause via spacebar
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!visible && !isLoading && e.code === "Space") {
@@ -109,45 +100,45 @@ function YouTubeAudioPlayer() {
         handlePlayPause();
       }
     };
-
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isPlaying, isLoading, visible]);
 
-  useEffect(() => {
-    if (youtubeUrl && youtubeUrl.includes("v=")) {
-      setVideoId(youtubeUrl.split("v=")[1]);
+  const handlePlayPause = () => {
+    if (!playerReady || !playerRef.current || isLoading) return;
+    if (isPlaying) {
+      playerRef.current.pauseVideo();
+    } else {
+      playerRef.current.playVideo();
     }
-  }, [youtubeUrl, setVideoId]);
+  };
 
-  // Load YouTube IFrame API
+  // Load YouTube IFrame API + initialize player on mount
   useEffect(() => {
-    // Create script tag if YouTube API isn't loaded yet
+    const setup = () => {
+      if (window.YT && window.YT.Player && !initializedRef.current) {
+        initializePlayer();
+      }
+    };
+
     if (!window.YT) {
       const tag = document.createElement("script");
       tag.src = "https://www.youtube.com/iframe_api";
       const firstScriptTag = document.getElementsByTagName("script")[0];
-
       firstScriptTag?.parentNode?.insertBefore(tag, firstScriptTag);
-    } else if (window.YT && window.YT.Player && !initializedRef.current) {
-      initializePlayer();
+      window.onYouTubeIframeAPIReady = setup;
+    } else {
+      setup();
     }
 
-    // Initialize player when API is ready
-    window.onYouTubeIframeAPIReady = () => {
-      if (!initializedRef.current) {
-        initializePlayer();
-      }
-    };
     return () => {
-      if (pollRef.current) {
-        clearInterval(pollRef.current);
-      }
+      if (pollRef.current) clearInterval(pollRef.current);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [videoId]);
+  }, []);
 
+  // Load video when videoId changes
   useEffect(() => {
     if (playerRef.current && playerReady && videoId) {
       playerRef.current.loadVideoById(videoId);
@@ -155,21 +146,22 @@ function YouTubeAudioPlayer() {
     }
   }, [videoId, playerReady]);
 
-  // Initialize YouTube player
+  // Combined loading flag
+  useEffect(() => {
+    setIsLoading(!(playerReady && lyricsReady));
+  }, [playerReady, lyricsReady]);
+
+  // Initialize YouTube player (with placeholder videoId or empty)
   const initializePlayer = () => {
-    if (!videoId || initializedRef.current) return;
-
     initializedRef.current = true;
-
-    // Clean up any existing player
     if (playerRef.current) {
       playerRef.current.destroy();
     }
 
     playerRef.current = new window.YT.Player("youtube-player-container", {
-      height: "200", // Hidden video
+      height: "200",
       width: "200",
-      videoId,
+      videoId: videoId || "", // safe fallback
       playerVars: {
         autoplay: 0,
         controls: 0,
@@ -186,29 +178,19 @@ function YouTubeAudioPlayer() {
     });
   };
 
-  // Combined ready state check
-  useEffect(() => {
-    if (playerReady && lyricsReady) {
-      setIsLoading(false);
-    } else {
-      setIsLoading(true);
-    }
-  }, [playerReady, lyricsReady]);
-
-  // Player event handlers
+  // On player ready
   const onPlayerReady = (event: YT.PlayerEvent) => {
-    event.target.setVolume(50); // optional: set default volume
-    event.target.playVideo();
+    event.target.setVolume(50);
     setDuration(event.target.getDuration());
-
-    setPlayerReady(true); // Mark player as ready
-    // Don't auto-play here - wait for both player and lyrics to be ready
+    setPlayerReady(true);
+    console.timeEnd("playerReady");
   };
 
-  // useEffect(() => {
-  //   console.log("Global isPlaying", isPlaying);
-  // }, [isPlaying]);
+  useEffect(() => {
+    console.time("playerReady");
+  }, []);
 
+  // Track state change (e.g. playing, paused)
   const onPlayerStateChange = (event: YT.OnStateChangeEvent) => {
     const isNowPlaying = event.data === window.YT.PlayerState.PLAYING;
     setIsPlaying(isNowPlaying);
@@ -217,21 +199,19 @@ function YouTubeAudioPlayer() {
       pollRef.current = setInterval(() => {
         const current = playerRef.current?.getCurrentTime();
         if (current !== undefined) {
-          setCurrentTime(current * 1000); // Convert to ms
+          setCurrentTime(current * 1000);
         }
       }, 250);
-    } else {
-      if (pollRef.current) {
-        clearInterval(pollRef.current);
-        pollRef.current = null;
-      }
+    } else if (pollRef.current) {
+      clearInterval(pollRef.current);
+      pollRef.current = null;
     }
+
     if (duration === 0) {
       setDuration(playerRef.current?.getDuration() || 0);
     }
   };
 
-  // Seek functionality for the progress bar
   const seek = (seconds: number) => {
     if (!playerReady || !playerRef.current || isLoading) return;
     playerRef.current.seekTo(seconds, true);
@@ -239,25 +219,21 @@ function YouTubeAudioPlayer() {
   };
 
   return (
-    <div className="text-white sm:w-full sm:flex sm:flex-col mt-3  hidden">
-      {/* Hidden YouTube player */}
+    <div className="text-white sm:w-full sm:flex sm:flex-col mt-3 hidden">
       <div id="youtube-player-container" className="hidden"></div>
 
-      {/* Progress bar */}
       <input
         type="range"
         min="0"
         max={duration}
         value={currentTime / 1000}
-        onChange={(e) => {
-          seek(Number(e.target.value));
-        }}
+        onChange={(e) => seek(Number(e.target.value))}
         className="w-full opacity-100 cursor-pointer range-slider mb-2 select-none"
         disabled={isLoading}
       />
+
       <ProgressBar />
       <ControlButtons handlePlayPause={handlePlayPause} isLoading={isLoading} />
-
       <VolumeController playerRef={playerRef} />
     </div>
   );
