@@ -100,14 +100,15 @@ function YouTubeAudioPlayer() {
         e.preventDefault();
         handlePlayPause();
       }
-      if (e.key === "ArrowLeft") {
+
+      if (!videoId && e.key === "ArrowLeft") {
         e.preventDefault();
         const newTime = Math.max(currentTime / 1000 - 5, 0);
         console.log(newTime);
         seek(newTime);
       }
 
-      if (e.key === "ArrowRight") {
+      if (!videoId && e.key === "ArrowRight") {
         e.preventDefault();
         const newTime = Math.min(currentTime / 1000 + 5, duration);
         seek(newTime);
