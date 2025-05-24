@@ -66,9 +66,12 @@ function Lyrics() {
             </div>
           ))
         ) : (
-          <div className="sm:text-3xl text-3xl opacity-40">
-            Choose a song with the search bar
-          </div>
+          <>
+            <div className="sm:text-3xl text-3xl opacity-40 mb-2">
+              Choose a song with the search bar
+            </div>
+            <div className="sm:text-3xl text-3xl opacity-40">Ctrl + K</div>
+          </>
         )}
       </div>
     </div>

@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+
 interface Player {
   playVideo(): void;
   pauseVideo(): void;
@@ -6,6 +8,7 @@ interface Player {
   getDuration(): number;
   destroy(): void;
   setVolume(volume: number): void;
+  getVolume(): number;
 }
 
 function VolumeController({
@@ -13,9 +16,43 @@ function VolumeController({
 }: {
   playerRef: React.RefObject<Player | null>;
 }) {
+  const [volume, setVolume] = useState<number>(50); // default volume
+
+  useEffect(() => {
+    if (playerRef.current) {
+      const vol = playerRef.current.getVolume();
+      setVolume(vol);
+    }
+  }, [playerRef]);
+
   const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    playerRef.current?.setVolume(Number(e.target.value));
+    const newVolume = Number(e.target.value);
+    setVolume(newVolume);
+    playerRef.current?.setVolume(newVolume);
   };
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "ArrowUp") {
+        e.preventDefault();
+        setVolume((prev) => {
+          const newVol = Math.min(prev + 5, 100);
+          playerRef.current?.setVolume(newVol);
+          return newVol;
+        });
+      }
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        setVolume((prev) => {
+          const newVol = Math.max(prev - 5, 0);
+          playerRef.current?.setVolume(newVol);
+          return newVol;
+        });
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [playerRef]);
 
   return (
     <div className="sm:flex sm:flex-row sm:items-center sm:gap-2 mt-4 hidden">
@@ -24,6 +61,9 @@ function VolumeController({
         type="range"
         className="w-full h-1 volume-slider cursor-pointer"
         onChange={handleVolumeChange}
+        min="0"
+        max="100"
+        value={volume}
       />
       <Volume2 />
     </div>

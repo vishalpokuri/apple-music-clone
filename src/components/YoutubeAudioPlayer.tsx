@@ -19,6 +19,7 @@ declare namespace YT {
     getDuration(): number;
     destroy(): void;
     setVolume(volume: number): void;
+    getVolume(): number;
   }
 }
 
@@ -98,6 +99,18 @@ function YouTubeAudioPlayer() {
       if (!visible && !isLoading && e.code === "Space") {
         e.preventDefault();
         handlePlayPause();
+      }
+      if (e.key === "ArrowLeft") {
+        e.preventDefault();
+        const newTime = Math.max(currentTime / 1000 - 5, 0);
+        console.log(newTime);
+        seek(newTime);
+      }
+
+      if (e.key === "ArrowRight") {
+        e.preventDefault();
+        const newTime = Math.min(currentTime / 1000 + 5, duration);
+        seek(newTime);
       }
     };
     window.addEventListener("keydown", handleKeyDown);
