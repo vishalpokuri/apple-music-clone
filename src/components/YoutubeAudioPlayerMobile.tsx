@@ -19,6 +19,7 @@ declare namespace YT {
     getDuration(): number;
     destroy(): void;
     setVolume(volume: number): void;
+    getVolume(): number;
   }
 }
 
