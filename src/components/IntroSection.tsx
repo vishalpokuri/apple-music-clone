@@ -53,7 +53,7 @@ function IntroSection({
               damping: 25,
             }}
           >
-            <div className=" w-[50vw] h-[65vh] bg-black/50 backdrop-blur-lg border border-white/20 rounded-2xl shadow-2xl p-6 overflow-hidden flex flex-col justify-between">
+            <div className=" w-[50vw] bg-black/50 backdrop-blur-lg border border-white/20 rounded-2xl shadow-2xl p-6 overflow-hidden flex flex-col justify-between">
               <img
                 src="/assets/Apple_logo_grey.svg.png"
                 alt="Apple Logo"
@@ -69,7 +69,7 @@ function IntroSection({
                 </p>
               </div>
               {/* Keybindings Section */}
-              <div className="flex flex-col gap-4 text-white/90 mx-auto w-[50%] p-4 border border-white/20 rounded-lg mb-10">
+              <div className="flex flex-col gap-4 text-white/90 mx-auto w-[50%] p-4 border border-white/20 rounded-lg my-10">
                 <p className="text-white/80 text-sm font-title">
                   Use these shortcuts to move around faster:
                 </p>
