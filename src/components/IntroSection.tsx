@@ -54,18 +54,13 @@ function IntroSection({
             }}
           >
             <div className=" w-[50vw] bg-black/50 backdrop-blur-lg border border-white/20 rounded-2xl shadow-2xl p-6 overflow-hidden flex flex-col justify-between">
-              <img
-                src="/assets/Apple_logo_grey.svg.png"
-                alt="Apple Logo"
-                className="w-5 absolute top-5 right-5 opacity-50 aspect-auto"
-              />
               {/* Intro Section */}
               <div>
                 <h1 className="text-white text-3xl font-semibold font-lyrics mb-2">
                   Heyaa 👋
                 </h1>
                 <p className="text-white/90 text-base font-title mb-4">
-                  I'm a music player inspired by Apple Music.
+                  I'm a music player inspired by modern streaming services.
                 </p>
               </div>
               {/* Keybindings Section */}
