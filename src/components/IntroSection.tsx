@@ -53,7 +53,13 @@ function IntroSection({
               damping: 25,
             }}
           >
-            <div className=" w-[50vw] bg-black/50 backdrop-blur-lg border border-white/20 rounded-2xl shadow-2xl p-6 overflow-hidden flex flex-col justify-between">
+            <motion.div
+              className="w-[50vw] border border-white/20 rounded-2xl shadow-2xl p-6 overflow-hidden flex flex-col justify-between"
+              initial={{ backgroundColor: "rgba(0,0,0,0)" }}
+              animate={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+              exit={{ backgroundColor: "rgba(0,0,0,0)" }}
+              transition={{ duration: 0.1, ease: "easeInOut" }}
+            >
               {/* Intro Section */}
               <div>
                 <h1 className="text-white text-3xl font-semibold font-lyrics mb-2">
@@ -124,32 +130,17 @@ function IntroSection({
                   <span className="text-sm text-white/70"> Help</span>
                 </div>
               </div>
-              {/* My Section */}
-              {/* <div className="flex flex-row items-center justify-end w-[100%]">
-                <a
-                  href="https://github.com/vishalpokuri/apple-music-clone"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <section className="flex flex-row items-center gap-2 bg-white/10 px-3 p-1 rounded-md border border-white/30 text-white/50 text-sm">
-                    <p className="flex flex-row items-center gap-2 text-white/90 text-sm font-artist">
-                      Like this?
-                      <span>
-                        <Star />
-                      </span>
-                      on
-                    </p>
-
-                    <img
-                      src="/assets/Octicons-mark-github.svg.png"
-                      alt="Github"
-                      className="w-5 aspect-auto"
-                    />
-                    <p>vishalpokuri</p>
-                  </section>
-                </a>
-              </div> */}
-            </div>
+              {/* CLose modal helper */}
+              <div
+                className={`
+                mt-2 text-center transform transition-all 
+              `}
+              >
+                <p className="text-white/40 text-sm">
+                  Press <Key>Esc</Key> or click outside to close
+                </p>
+              </div>
+            </motion.div>
           </motion.div>
         </>
       )}
@@ -179,3 +170,33 @@ export default IntroSection;
 //     </div>
 //   );
 // }
+
+{
+  /* My Section */
+}
+{
+  /* <div className="flex flex-row items-center justify-end w-[100%]">
+                <a
+                  href="https://github.com/vishalpokuri/apple-music-clone"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <section className="flex flex-row items-center gap-2 bg-white/10 px-3 p-1 rounded-md border border-white/30 text-white/50 text-sm">
+                    <p className="flex flex-row items-center gap-2 text-white/90 text-sm font-artist">
+                      Like this?
+                      <span>
+                        <Star />
+                      </span>
+                      on
+                    </p>
+
+                    <img
+                      src="/assets/Octicons-mark-github.svg.png"
+                      alt="Github"
+                      className="w-5 aspect-auto"
+                    />
+                    <p>vishalpokuri</p>
+                  </section>
+                </a>
+              </div> */
+}
