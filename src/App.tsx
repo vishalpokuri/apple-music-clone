@@ -56,7 +56,7 @@ function App() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowLoader(false);
-    }, 1400);
+    }, 2500);
 
     return () => clearTimeout(timer);
   }, []);
@@ -81,9 +81,6 @@ function App() {
   }, [visible, setSearchResult, setVisible]);
 
   // Show loader if still loading
-  if (showLoader) {
-    return <StartupLoader />;
-  }
 
   // Mobile layout
   if (window.innerWidth < 640) {
@@ -120,6 +117,7 @@ function App() {
   // Desktop layout
   return (
     <div className="w-screen h-screen select-none">
+      {showLoader && <StartupLoader />}
       <Canvas />
       <div className="w-screen h-screen flex">
         <SongDesc />

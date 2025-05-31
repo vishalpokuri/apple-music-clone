@@ -6,7 +6,7 @@ export default function StartupLoader() {
   const [shouldHide, setShouldHide] = useState(false);
 
   useEffect(() => {
-    const duration = 2500;
+    const duration = 5000;
     const steps = 100;
     const increment = 100 / steps;
     const stepDuration = duration / steps;
