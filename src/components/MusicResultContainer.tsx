@@ -112,7 +112,7 @@ function MusicResultContainer({
 
   return (
     <div
-      className={`group relative w-full flex items-center p-3 rounded-2xl 
+      className={`group relative w-full flex items-center p-1 rounded-2xl 
                   transition-all duration-300 ease-out
                   hover:bg-gradient-to-r hover:from-zinc-800/50 hover:to-zinc-700/30
                   hover:shadow-lg hover:shadow-black/20
@@ -125,7 +125,7 @@ function MusicResultContainer({
       }}
     >
       {/* Album Art with enhanced styling */}
-      <div className="relative h-14 w-14 flex-shrink-0 mr-4">
+      <div className="relative h-12 w-12 flex-shrink-0 mr-4">
         <img
           src={imgurl}
           alt={`${title} album cover`}
@@ -137,18 +137,6 @@ function MusicResultContainer({
             target.src = "/placeholder-album.jpg";
           }}
         />
-        {/* Play overlay on hover */}
-        <div
-          className="absolute inset-0 bg-black/40 rounded-xl opacity-0 
-                        group-hover:opacity-100 transition-opacity duration-300
-                        flex items-center justify-center"
-        >
-          <div className="w-6 h-6 bg-white/90 rounded-full flex items-center justify-center">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-              <path d="M8 5V19L19 12L8 5Z" fill="#000" />
-            </svg>
-          </div>
-        </div>
       </div>
 
       {/* Song Info */}
@@ -169,7 +157,7 @@ function MusicResultContainer({
             </span>
           )}
         </div>
-        <div className="flex items-center gap-2 text-sm">
+        <div className="flex items-center gap-2 text-xs">
           <p
             className="font-artist text-zinc-400 truncate 
                         group-hover:text-pink-300 transition-colors duration-200"

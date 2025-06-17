@@ -168,7 +168,7 @@ function SearchBox({ visible }: SearchBoxProps) {
                       {searchResult.length === 1 ? "song" : "songs"}
                     </span>
                   </div>
-                  <div className="max-h-80 overflow-y-auto custom-scrollbar space-y-1">
+                  <div className="max-h-54 overflow-y-auto custom-scrollbar space-y-1">
                     {searchResult.map((item, index) => (
                       <MusicResultContainer
                         key={`${item.id || index}-${index}`}
