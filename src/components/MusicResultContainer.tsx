@@ -7,6 +7,7 @@ interface MusicResult {
   artist: string;
   downloadUrl: string;
   duration: number;
+  index?: number;
 }
 
 function MusicResultContainer({
@@ -15,6 +16,7 @@ function MusicResultContainer({
   artist,
   downloadUrl,
   duration,
+  index = 0,
 }: MusicResult) {
   const [isLoading, setIsLoading] = useState(false);
   const {
@@ -102,39 +104,119 @@ function MusicResultContainer({
     }
   };
 
+  const formatDuration = (seconds: number) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
+  };
+
   return (
-    <>
-      <div
-        className={`w-full flex flex-row h-16 my-2 px-2 items-center ${
-          isLoading ? "opacity-60" : "cursor-pointer"
-        }`}
-        onClick={() => {
-          if (!isLoading) {
-            play();
-          }
-        }}
-      >
-        <div className="h-12 w-12 flex items-center justify-center mr-3">
-          <img
-            src={imgurl}
-            alt={`${title} album cover`}
-            className="min-w-full h-full rounded-sm object-cover"
-          />
+    <div
+      className={`group relative w-full flex items-center p-3 rounded-2xl 
+                  transition-all duration-300 ease-out
+                  hover:bg-gradient-to-r hover:from-zinc-800/50 hover:to-zinc-700/30
+                  hover:shadow-lg hover:shadow-black/20
+                  ${isLoading ? "opacity-60 cursor-wait" : "cursor-pointer"}
+                  border border-transparent hover:border-zinc-600/30`}
+      onClick={() => {
+        if (!isLoading) {
+          play();
+        }
+      }}
+    >
+      {/* Album Art with enhanced styling */}
+      <div className="relative h-14 w-14 flex-shrink-0 mr-4">
+        <img
+          src={imgurl}
+          alt={`${title} album cover`}
+          className="w-full h-full rounded-xl object-cover 
+                     shadow-lg group-hover:shadow-xl transition-all duration-300
+                     group-hover:scale-105"
+          onError={(e) => {
+            const target = e.target as HTMLImageElement;
+            target.src = "/placeholder-album.jpg";
+          }}
+        />
+        {/* Play overlay on hover */}
+        <div
+          className="absolute inset-0 bg-black/40 rounded-xl opacity-0 
+                        group-hover:opacity-100 transition-opacity duration-300
+                        flex items-center justify-center"
+        >
+          <div className="w-6 h-6 bg-white/90 rounded-full flex items-center justify-center">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+              <path d="M8 5V19L19 12L8 5Z" fill="#000" />
+            </svg>
+          </div>
         </div>
-        <div className="flex flex-col justify-center h-full truncate">
-          <p className="text-md font-title text-[#d8d8d8] truncate">{title}</p>
-          <p className="text-xs font-artist text-[#ff4e6b] truncate">
+      </div>
+
+      {/* Song Info */}
+      <div className="flex-1 min-w-0 mr-3">
+        <div className="flex items-center gap-2 mb-1">
+          <h3
+            className="font-title text-white text-base font-medium truncate 
+                         group-hover:text-pink-100 transition-colors duration-200"
+          >
+            {title}
+          </h3>
+          {index === 0 && (
+            <span
+              className="px-2 py-0.5 bg-gradient-to-r from-pink-500 to-red-500 
+                           text-white text-xs font-semibold rounded-full"
+            >
+              TOP
+            </span>
+          )}
+        </div>
+        <div className="flex items-center gap-2 text-sm">
+          <p
+            className="font-artist text-zinc-400 truncate 
+                        group-hover:text-pink-300 transition-colors duration-200"
+          >
             {artist}
           </p>
+          <span className="w-1 h-1 bg-zinc-500 rounded-full"></span>
+          <span className="text-zinc-500 text-xs font-mono">
+            {formatDuration(duration)}
+          </span>
         </div>
-        {isLoading && (
-          <div className="ml-auto mr-2">
-            <div className="h-5 w-5 border-2 border-t-transparent border-[#ff4e6b] rounded-full animate-spin"></div>
+      </div>
+
+      {/* Loading State / Action Button */}
+      <div className="flex-shrink-0 flex items-center">
+        {isLoading ? (
+          <div className="relative">
+            <div
+              className="h-8 w-8 border-2 border-pink-500/30 border-t-pink-500 
+                           rounded-full animate-spin"
+            ></div>
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="w-2 h-2 bg-pink-500 rounded-full animate-pulse"></div>
+            </div>
+          </div>
+        ) : (
+          <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+            <button
+              className="p-2 bg-gradient-to-r from-pink-500/20 to-red-500/20 
+                             hover:from-pink-500/30 hover:to-red-500/30
+                             rounded-xl transition-all duration-200 hover:scale-110"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <path d="M8 5V19L19 12L8 5Z" fill="#ff4e6b" />
+              </svg>
+            </button>
           </div>
         )}
       </div>
-      <div className="w-[96%] h-[1px] bg-zinc-700 mx-auto"></div>
-    </>
+
+      {/* Subtle border effect */}
+      <div
+        className="absolute bottom-0 left-4 right-4 h-px bg-gradient-to-r 
+                      from-transparent via-zinc-700/50 to-transparent
+                      opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+      ></div>
+    </div>
   );
 }
 

@@ -67,7 +67,7 @@ export const useSearchInputStore = create<SearchInput>()(
 export const useSearchResultStore = create<SearchResults>()(
   devtools(
     (set) => ({
-      searchResult: [{}],
+      searchResult: [],
       setSearchResult: (value) => set({ searchResult: value }),
     }),
     { name: "SearchResultStore" }

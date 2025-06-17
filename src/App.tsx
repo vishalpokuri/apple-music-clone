@@ -67,7 +67,7 @@ function App() {
       if (e.ctrlKey && e.key.toLowerCase() === "k") {
         e.preventDefault();
         if (visible) {
-          setSearchResult([{}]);
+          setSearchResult([]);
         }
         setVisible();
       }
