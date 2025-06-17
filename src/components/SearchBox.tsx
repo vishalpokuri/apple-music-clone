@@ -26,10 +26,10 @@ function SearchBox({ visible }: SearchBoxProps) {
 
   async function search() {
     if (!searchInput.trim()) return;
-    
+
     setIsSearching(true);
     setHasSearched(true);
-    
+
     try {
       const artistParameters = {
         method: "GET",
@@ -50,7 +50,7 @@ function SearchBox({ visible }: SearchBoxProps) {
 
       setSearchResult(metadata);
     } catch (error) {
-      console.error('Search error:', error);
+      console.error("Search error:", error);
       setSearchResult([]);
     } finally {
       setIsSearching(false);
@@ -97,16 +97,16 @@ function SearchBox({ visible }: SearchBoxProps) {
                   <img
                     src="/assets/headphoneIcon.png"
                     alt=""
-                    className="w-8 h-8"
+                    className="w-7 h-7"
                   />
                 </div>
                 <div>
                   <h2 className="text-xl font-bold text-white font-title">
                     Search Music
                   </h2>
-                  <p className="text-sm text-zinc-400">
+                  {/* <p className="text-sm text-zinc-400">
                     Find your favorite songs and artists
-                  </p>
+                  </p> */}
                 </div>
               </div>
 
@@ -152,9 +152,7 @@ function SearchBox({ visible }: SearchBoxProps) {
                       <div className="w-4 h-4 bg-pink-500 rounded-full animate-pulse"></div>
                     </div>
                   </div>
-                  <p className="text-zinc-400 font-title mb-2">
-                    Searching...
-                  </p>
+                  <p className="text-zinc-400 font-title mb-2">Searching...</p>
                   <p className="text-sm text-zinc-500">
                     Finding the perfect tracks for you
                   </p>
