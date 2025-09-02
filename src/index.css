@@ -1,27 +1,27 @@
 @font-face {
   font-family: Lyrics;
-  src: url("./fonts/Lyrics.woff2") format("woff2");
+  src: url("/fonts/Lyrics.woff2") format("woff2");
   font-weight: normal;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
   font-family: Interface;
-  src: url("./fonts/Interface.woff2") format("woff2");
+  src: url("/fonts/Interface.woff2") format("woff2");
   font-weight: normal;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
   font-family: Artist;
-  src: url("./fonts/Artist.woff2") format("woff2");
+  src: url("/fonts/Artist.woff2") format("woff2");
   font-weight: normal;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
   font-family: Title;
-  src: url("./fonts/Title.woff2") format("woff2");
+  src: url("/fonts/Title.woff2") format("woff2");
   font-weight: normal;
   font-style: normal;
   font-display: swap;
